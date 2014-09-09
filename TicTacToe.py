@@ -1,5 +1,7 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivy.lang import Builder
 
@@ -9,74 +11,78 @@ from kivy.uix.label import Label
 
 from ai.ttt import State, ab
 
-from kivy.clock import Clock
+class TTTButton(Button):
+    def __init__(self, x, y, *args, **kwargs):
+        super(TTTButton, self).__init__(*args, **kwargs)
+        self.x_grid = x
+        self.y_grid = y
 
-class TicTacToeGame():
+class TicTacToeGame(Widget):
     def __init__(self):
         self.state = State()
         self.state.player = 2 # ai is always player 2 so this is always the same
-        self.state.min_v = 1
-        self.state.max_v = 2
         self.grid = GridLayout(cols=3,
                                padding=20,
                                spacing=20)
-        self.new_state_to_grid()
+        self.root = BoxLayout()
+        self.root.orientation = 'vertical'
+        # TODO: use AnchorLayout to solve problem of having many things on screen...
+        self.ai_first_button = Button(text='AI first')
+        self.ai_first_button.bind(on_press = self.ai_plays_first)
+        self.ai_first_button.size_hint = 1, 0.5
 
-    def grid_to_state(self):
-        pieces = map(lambda button: int(button.text), self.grid.children)
-        self.state = []
-        self.state += pieces[0:3]
-        self.state += pieces[3:6]
-        self.state += pieces[6:9]
+        #self.grid.size_hint = 1, 1
 
-    def new_state_to_grid(self):
-        board = self.state.board
-        for y, row in enumerate(board):
-            for x, piece in enumerate(row):
-                if piece == 0:
-                    widget = Button(text=str(piece))
-                    widget.self = self
-                    widget.x_grid = x
-                    widget.y_grid = y
-                    widget.bind(on_press = callback)
-                    self.grid.add_widget(widget)
-                else:
-                    widget = Label(text=str(piece))
-                    self.grid.add_widget(widget)
+        self.root.add_widget(self.ai_first_button)
+        self.root.add_widget(self.grid)
+        self.state_to_grid()
 
-    def state_to_grid(self, _):
+    def state_to_grid(self):
         self.grid.clear_widgets()
         board = self.state.board
         for y, row in enumerate(board):
             for x, piece in enumerate(row):
                 if piece == 0:
-                    widget = Button(text=str(piece))
-                    widget.self = self
-                    widget.x_grid = x
-                    widget.y_grid = y
-                    widget.bind(on_press = callback)
-                    self.grid.add_widget(widget)
+                    button = TTTButton(x, y, text=str(piece))
+                    button.x_grid = x
+                    button.y_grid = y
+                    button.bind(on_press = self.human_plays)
+                    self.grid.add_widget(button)
                 else:
                     widget = Label(text=str(piece))
                     self.grid.add_widget(widget)
 
-def callback (button):
-    x = button.x_grid
-    y = button.y_grid
-    self = button.self
-    self.state.board[y][x] = 1
-    self.state = ab(self.state)
-    self.state.player = 2
-    self.state.min_v = 1
-    self.state.max_v = 2
+    def human_plays(self, button):
+        if self.state.max_piece == -1:
+            print '\n\nTrue\n\n'
+            # we know that the human is playing first!
+            # therefore the AI will be player 2 (try to maximize utility of 2)
+            self.root.remove_widget(self.ai_first_button)
+            self.state.max_piece = 2
+            self.state.min_piece = 1
+            self.state.next_piece = 2
+
+        x = button.x_grid
+        y = button.y_grid
+        self.state.board[y][x] = self.state.min_piece
+        self.state = ab(self.state)
+        self.state.next_piece = self.state.max_piece
+        self.state_to_grid()
+
+    def ai_plays_first(self, button):
+        button.parent.remove_widget(button) # once ai plays first, AI can't play first again.
+        self.state.max_piece = 1
+        self.state.min_piece = 2
+        self.state.next_piece = 1
+        self.state = ab(self.state)
+        self.state.next_piece = self.state.max_piece
+        self.state_to_grid()
 
 class TTTApp(App):
     def build(self):
         tic_tac_toe_game = TicTacToeGame()
-        grid = tic_tac_toe_game.grid
-        Clock.schedule_interval(tic_tac_toe_game.state_to_grid, 1.0 / 60.0)
-        return grid
-
+        root = tic_tac_toe_game.root
+        return root
 
 if __name__ == '__main__':
     TTTApp().run()
