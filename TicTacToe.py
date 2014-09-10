@@ -11,6 +11,8 @@ from kivy.uix.label import Label
 
 from ai.ttt import State, ab
 
+from kivy.properties import ObjectProperty
+
 class TTTButton(Button):
     def __init__(self, x, y, *args, **kwargs):
         super(TTTButton, self).__init__(*args, **kwargs)
@@ -18,23 +20,19 @@ class TTTButton(Button):
         self.y_grid = y
 
 class TicTacToeGame(Widget):
-    def __init__(self):
+    frame = ObjectProperty(None)
+    ai_first_button = ObjectProperty(None)
+    def init(self):
         self.state = State()
         self.state.player = 2 # ai is always player 2 so this is always the same
+
+        self.ai_first_button.bind(on_press = self.ai_plays_first)
+
         self.grid = GridLayout(cols=3,
                                padding=20,
                                spacing=20)
-        self.root = BoxLayout()
-        self.root.orientation = 'vertical'
-        # TODO: use AnchorLayout to solve problem of having many things on screen...
-        self.ai_first_button = Button(text='AI first')
-        self.ai_first_button.bind(on_press = self.ai_plays_first)
-        self.ai_first_button.size_hint = 1, 0.5
 
-        #self.grid.size_hint = 1, 1
-
-        self.root.add_widget(self.ai_first_button)
-        self.root.add_widget(self.grid)
+        self.frame.add_widget(self.grid)
         self.state_to_grid()
 
     def state_to_grid(self):
@@ -44,8 +42,6 @@ class TicTacToeGame(Widget):
             for x, piece in enumerate(row):
                 if piece == 0:
                     button = TTTButton(x, y, text=str(piece))
-                    button.x_grid = x
-                    button.y_grid = y
                     button.bind(on_press = self.human_plays)
                     self.grid.add_widget(button)
                 else:
@@ -57,7 +53,7 @@ class TicTacToeGame(Widget):
             print '\n\nTrue\n\n'
             # we know that the human is playing first!
             # therefore the AI will be player 2 (try to maximize utility of 2)
-            self.root.remove_widget(self.ai_first_button)
+            self.frame.remove_widget(self.ai_first_button)
             self.state.max_piece = 2
             self.state.min_piece = 1
             self.state.next_piece = 2
@@ -81,8 +77,10 @@ class TicTacToeGame(Widget):
 class TTTApp(App):
     def build(self):
         tic_tac_toe_game = TicTacToeGame()
-        root = tic_tac_toe_game.root
-        return root
+        tic_tac_toe_game.init()
+        frame = tic_tac_toe_game.frame
+        return frame
 
 if __name__ == '__main__':
     TTTApp().run()
+
