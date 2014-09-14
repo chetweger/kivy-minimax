@@ -74,6 +74,8 @@ class TicTacToeGame(Widget):
             else:
                 winning_text = 'The game ended in a tie.'
             self.game_over.text = winning_text
+            return True
+        return False
 
     def human_first(self):
         self.state.max_piece = 2
@@ -93,15 +95,16 @@ class TicTacToeGame(Widget):
             self.human_first()
 
         self.state.board[button.y_grid][button.x_grid] = self.state.min_piece
-        self.check_win() # check if the human just won
-
+        ai_won = self.check_win() # check if the human just won
+        if ai_won:
+            self.state_to_grid()
+            return
         self.state = minimax_search(self.state)
         self.check_win() # check if the AI just won
         self.state.next_piece = self.state.max_piece
         self.state_to_grid()
 
     def ai_plays_first(self, button):
-        print 'hide methods ', dir(button)
         self.toolbar.remove_widget(button) # once ai plays first, AI can't play first again.
         self.ai_first()
         self.state = minimax_search(self.state)
