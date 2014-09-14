@@ -1,13 +1,36 @@
 #:kivy 1.0.9
 
 <TicTacToeGame>:
-    frame: frame
+    game_space: game_space
+    toolbar: toolbar
     ai_first_button: ai_first_button
+    new_game: new_game
+    grid: grid
+    game_over: game_over
     BoxLayout:
-        id: frame
+        id: game_space
         orientation: 'vertical'
 
-        Button:
-            id: ai_first_button
+        BoxLayout:
+            id: toolbar
             size_hint: 1, 0.3
-            text: 'AI first'
+            orientation: 'horizontal'
+
+            Button:
+                id: ai_first_button
+                text: 'AI first'
+
+            Button:
+                id: new_game
+                text: 'New Game'
+
+        Label:
+            id: game_over
+            size_hint: (0.001, 0.001)
+            text: ''
+
+        GridLayout:
+            id: grid
+            cols: 3
+            padding: 20
+            spacing: 20

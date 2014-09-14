@@ -23,15 +23,8 @@ class Util:
   def __lt__(self, other):
     return self.value < other.value
 
-def is_over(state):
-  for row in state.board:
-    for piece in row:
-      if piece == 0:
-        return False
-  return True
-
 def utility(state):
-  someone_won = is_win(state)
+  someone_won = state.is_win()
   if someone_won and state.next_piece == state.min_piece:
     value = 1 # utility is called before state.next_piece has moved, so really we are looking at the previous player
   elif someone_won and state.next_piece == state.max_piece:
@@ -98,7 +91,7 @@ class TranspositionTable:
 
 def min_search(state, a, b, t_table):
   #print state.print_me()
-  if is_over(state) or is_win(state):
+  if state.is_over() or state.is_win():
     #print 'a', state.print_me()
     return utility(state)
 
@@ -116,7 +109,7 @@ def min_search(state, a, b, t_table):
 
 def max_search(state, a, b, is_root, t_table):
   #print state.print_me()
-  if is_over(state) or is_win(state):
+  if state.is_over() or state.is_win():
     #print 'b', state.print_me()
     return utility(state)
 
@@ -142,10 +135,10 @@ def max_search(state, a, b, is_root, t_table):
   else:
     return highest
 
-def ab(state):
+def minimax_search(state):
   '''Find next best move for the current next_piece.
   '''
-  print 'ab(state)', state.min_piece
+  print 'minimax_search(state)', state.min_piece
   transposition_table = TranspositionTable()
   next_move = max_search(state, -9000, 9000, True, transposition_table)
   return next_move[0]
@@ -157,22 +150,6 @@ def generate_next_piece(next_piece):
     return 1
   assert False
 
-def is_win(state):
-  board = state.board
-  diagonal_1 = [board[i][i] for i in range(3)]
-  diagonal_2 = [board[i][2-i] for i in range(3)]
-  copy_board = state.copy_me().board
-  for row in copy_board:
-    if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), row)):
-      return True
-  transposed_board = zip(*copy_board)
-  for column in transposed_board:
-    if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), column)):
-      return True
-  if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), diagonal_1)) or bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), diagonal_2)):
-    return True
-  return False
-
 class State:
   def __init__(self):
     self.board = [[0 for i in range(3)] for i in range(3)]
@@ -180,6 +157,7 @@ class State:
     self.max_piece = -1  # the piece of the player the AI is trying to make win (maximize utility)
                          # E.G.: if AI is player 2 then max_piece = 2
     self.min_piece = -1  # the AI's opponent (AI tries to minimize this player's utility)
+
   def get_children(self):
     children = []
     for row_index in range(3):
@@ -191,11 +169,49 @@ class State:
           children += [child_state]
     return children
 
+  def is_over(self):
+    for row in self.board:
+      for piece in row:
+        if piece == 0:
+          return False
+    return True
+
+  def is_win(self):
+    board = self.board
+    diagonal_1 = [board[i][i] for i in range(3)]
+    diagonal_2 = [board[i][2-i] for i in range(3)]
+    copy_board = self.copy_me().board
+    for row in copy_board:
+      if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), row)):
+        return row[0]
+    transposed_board = zip(*copy_board)
+    for column in transposed_board:
+      if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), column)):
+        return column[0]
+    if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), diagonal_1)):
+      return diagonal_1[0]
+    if bool(reduce( (lambda cell_x, cell_y: cell_x & cell_y), diagonal_2)):
+       return diagonal_2[0]
+    return 0
+
+  def check_win(self):
+    '''Returns 1 or 2 if either of these players won or returns 0 if
+    neither player won in the case of a tie
+    '''
+    board_full = self.is_over()
+    winning_player = self.is_win()
+    if winning_player:
+      return winning_player
+    elif board_full:
+      return -1 # nobody won
+    else:
+      return 0
+
   def serialize_me(self):
     return _serialize_board(self.board)
 
   def print_me(self):
-    print 'current next_piece to play: ', self.next_piece, ' is win ', str(is_win(self)), '\nboard:'
+    print 'current next_piece to play: ', self.next_piece, ' is win ', str(self.is_win()), '\nboard:'
     for row in self.board:
       print row
     print
