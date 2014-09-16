@@ -28,6 +28,8 @@ class TicTacToeGame(Widget):
     new_game = ObjectProperty(None)
     meta_board = ObjectProperty(None)
 
+    td_consts = {'c3': 0.767944, 'c2': 1.049451, 'c1': 3.074038, 'c6': 0.220823, 'c5': 0.281883, 'c4': 0.605861}
+
     def initialize(self, app):
         self.state = State()
         self.ai_first_button.bind(on_press = self.ai_plays_first)
@@ -71,13 +73,6 @@ class TicTacToeGame(Widget):
                     for mini_x, piece in enumerate(row):
                         if piece['cell'] == 0:
                             if will_make_buttons:
-                                '''
-                                button = MetaTTTButton(text = str(piece['cell']),
-                                                       meta_y = meta_y,
-                                                       meta_x = meta_x,
-                                                       mini_y = mini_y,
-                                                       mini_x = mini_x)
-                                '''
                                 button = MetaTTTButton(text = str(piece['cell']),
                                                        meta_y = meta_y,
                                                        meta_x = meta_x,
@@ -120,12 +115,17 @@ class TicTacToeGame(Widget):
     def human_first(self):
         self.state.max_piece = 2
         self.state.min_piece = 1
-        self.state.next_piece = 2
+        self.state.next_piece[2] = 2
 
     def ai_first(self):
         self.state.max_piece = 1
         self.state.min_piece = 2
-        self.state.next_piece = 1
+        self.state.next_piece[2] = 1
+
+    def set_next_state(self, button):
+        self.state.next_piece[0] = button.mini_y
+        self.state.next_piece[1] = button.mini_x
+        self.state.next_piece[2] = int(self.state.max_piece)
 
     def human_plays(self, button):
         if self.state.max_piece == -1:
@@ -134,12 +134,12 @@ class TicTacToeGame(Widget):
             self.toolbar.remove_widget(self.ai_first_button) # once ai plays first, AI can't play first again.
             self.human_first()
 
-        self.state.board[button.y_grid][button.x_grid] = self.state.min_piece
-        self.check_win() # check if the human just won
+        self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.state.min_piece)
+        self.set_next_state(button)
+        #self.check_win() # check if the human just won
 
-        self.state = minimax_search(self.state)
-        self.check_win() # check if the AI just won
-        self.state.next_piece = self.state.max_piece
+        expected_utility, self.state = minimax_search(self.state, self.td_consts)
+        #self.check_win() # check if the AI just won
         self.state_to_grid()
 
     def ai_plays_first(self, button):
@@ -147,7 +147,7 @@ class TicTacToeGame(Widget):
         self.toolbar.remove_widget(button) # once ai plays first, AI can't play first again.
         self.ai_first()
         self.state = minimax_search(self.state)
-        self.state.next_piece = self.state.max_piece
+        self.state.next_piece[2] = int(self.state.max_piece)
         self.state_to_grid()
 
 class PlayMetaTTTApp(App):
