@@ -109,32 +109,32 @@ class TicTacToeGame(Widget):
         pass
 
     def check_win(self):
-        winning_player = self.state.check_win() # returns 1 or 2 if either of these players won or returns 0 if
+        winning_player = self.state.check_winner() # returns 1 or 2 if either of these players won or returns 0 if
                                                 # neither player won in the case of a tie
+
         if winning_player:
-            self.human_plays = self.do_nothing
+            self.human_plays = self.do_nothing # deactivate button callback.
 
-            self.game_over.size_hint = (1., 0.3) #
-
-            if winning_player == self.state.min_piece:
+            if winning_player == int(self.state.min_piece):
                 # if this case is true, the human won!??!
                 # Wow, this should never happen! let the player know they discovered a bug in my code.
-                winning_text = 'Congradulations, you won.  This should never happen and you have just discovered a bug in my code.  Please send an email to me at chetweger@gmail.com describing how this happened!'
-            elif winning_player == self.state.max_piece:
+                winning_text = '\n\nCongradualations, you won!'
+            elif winning_player == int(self.state.max_piece):
                 # ai won
-                winning_text = 'You lost.  Better luck next time.'
+                winning_text = '\n\nYou lost.  Better luck next time.'
             else:
-                winning_text = 'The game ended in a tie.'
-            self.game_over.text = winning_text
+                winning_text = '\n\nThe game ended in a tie.'
+            self.game_info.text += winning_text
+        return winning_player
 
     def human_first(self):
-        self.state.max_piece = 2
-        self.state.min_piece = 1
+        self.state.max_piece = '2'
+        self.state.min_piece = '1'
         self.state.next_piece[2] = 2
 
     def ai_first(self):
-        self.state.max_piece = 1
-        self.state.min_piece = 2
+        self.state.max_piece = '1'
+        self.state.min_piece = '2'
         self.state.next_piece[2] = 1
 
     def set_next_state(self, button):
@@ -153,15 +153,16 @@ class TicTacToeGame(Widget):
         self.set_next_state(button)
 
         self.update_score(button)
-        #self.check_win() # check if the human just won
+        if self.check_win(): # check if the human just won
+            self.state_to_grid()
+            return
 
         expected_utility, self.state = minimax_search(self.state, self.td_consts)
-        #self.check_win() # check if the AI just won
+        self.check_win() # check if the AI just won
         self.state_to_grid()
 
 
     def ai_plays_first(self, button):
-        #print 'hide methods ', dir(button)
         self.toolbar.remove_widget(button) # once ai plays first, AI can't play first again.
         self.ai_first()
         expected_utility, self.state = minimax_search(self.state, self.td_consts)
