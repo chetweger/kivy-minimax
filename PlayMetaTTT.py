@@ -13,6 +13,8 @@ from ai.learning import State, minimax_search, is_win, is_full
 
 from kivy.properties import ObjectProperty
 
+from kivy.uix.scrollview import ScrollView
+
 class MetaTTTButton(Button):
     def __init__(self, *args, **kwargs):
         super(MetaTTTButton, self).__init__(*args, **kwargs)
@@ -22,13 +24,16 @@ class MetaTTTButton(Button):
         self.mini_y = kwargs['mini_y'] # y location on mini board
 
 class TicTacToeGame(Widget):
+    window_frame = ObjectProperty(None) # root object that hold everything
     game_space = ObjectProperty(None)
     toolbar = ObjectProperty(None)
     ai_first_button = ObjectProperty(None)
     new_game = ObjectProperty(None)
     meta_board = ObjectProperty(None)
+    game_info = ObjectProperty(None)
 
-    td_consts = {'c3': 0.767944, 'c2': 1.049451, 'c1': 3.074038, 'c6': 0.220823, 'c5': 0.281883, 'c4': 0.605861}
+
+    td_consts = {'c3': 0.767944, 'c2': 1.049451, 'c1': 3.074038, 'c6': 0.220823, 'c5': 0.181883, 'c4': 0.605861}
 
     def initialize(self, app):
         self.state = State()
@@ -36,9 +41,10 @@ class TicTacToeGame(Widget):
         self.new_game.bind(on_press = self.start_new_game)
         self.state_to_grid()
         self.app = app
+        self.game_info.text = 'Scroll: AI: %d | Human %d' % (0, 0)
 
     def start_new_game(self, button):
-        # TODO: avoid this method by moving TicTacToeGame beneauth a mother game method.
+        # TODO: avoid this method by moving TicTacToeGame beneath a mother game method.
         self.app.stop()
         PlayMetaTTTApp().run() # start a new game!
 
@@ -55,6 +61,14 @@ class TicTacToeGame(Widget):
             if playable:
                 return (meta_y == piece[0]) and (meta_x == piece[1])
         return False
+
+    def update_score(self, button):
+        if is_win(self.state.boards[button.meta_y][button.meta_x]):
+            # update human score
+            self.state.score[str(self.state.min_piece)] += 1
+        self.game_info.text = ('Scroll: AI: %d | Human %d' %
+                               (self.state.score[str(self.state.max_piece)],
+                                self.state.score[str(self.state.min_piece)]))
 
     def state_to_grid(self):
         self.meta_board.clear_widgets()
@@ -87,6 +101,7 @@ class TicTacToeGame(Widget):
                             mini_board.add_widget(Label(text=str(piece['cell'])))
 
                 self.meta_board.add_widget(mini_board)
+
 
     def do_nothing(self, button):
         '''A disabled button callback used for when game is over.
@@ -136,25 +151,27 @@ class TicTacToeGame(Widget):
 
         self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.state.min_piece)
         self.set_next_state(button)
+
+        self.update_score(button)
         #self.check_win() # check if the human just won
 
         expected_utility, self.state = minimax_search(self.state, self.td_consts)
         #self.check_win() # check if the AI just won
         self.state_to_grid()
 
+
     def ai_plays_first(self, button):
-        print 'hide methods ', dir(button)
+        #print 'hide methods ', dir(button)
         self.toolbar.remove_widget(button) # once ai plays first, AI can't play first again.
         self.ai_first()
-        self.state = minimax_search(self.state)
-        self.state.next_piece[2] = int(self.state.max_piece)
+        expected_utility, self.state = minimax_search(self.state, self.td_consts)
         self.state_to_grid()
 
 class PlayMetaTTTApp(App):
     def build(self):
         tic_tac_toe_game = TicTacToeGame()
         tic_tac_toe_game.initialize(self)
-        game_space = tic_tac_toe_game.game_space
+        game_space = tic_tac_toe_game.window_frame
         return game_space
 
 if __name__ == '__main__':
