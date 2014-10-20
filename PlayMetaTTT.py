@@ -15,6 +15,48 @@ from kivy.properties import ObjectProperty
 
 from kivy.uix.scrollview import ScrollView
 
+'''
+def increase_constant(button):
+    print button
+'''
+
+class ConstantAdjuster(Button):
+    adjustment = 0.2
+    def __init__(self, game_instance, box_container, td_constant, *args, **kwargs):
+        super(ConstantAdjuster, self).__init__(*args, **kwargs)
+
+        self.td_constant = td_constant
+        self.game_instance = game_instance
+
+        self.box = BoxLayout()
+        self.box.orientation = 'vertical'
+
+        up = Button(text = '+')
+        up.bind(on_press = self.increase_constant)
+        self.label = Label(text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant]))
+        print self.td_constant, self.increase_constant, self, up
+        '''
+        self.down = Button(text = '-', on_press=self.decrease_constant)
+        '''
+
+        '''
+        self.box.add_widget(up)
+        self.box.add_widget(self.label)
+        box.add_widget(self.down)
+        '''
+
+        box_container.add_widget(up)
+
+    def increase_constant(self, button):
+        self.game_instance.td_consts[self.td_constant] += self.adjustment
+        print 'increase_constant', button.text, self.game_instance.td_consts
+        #self.label.text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant])
+
+    def decrease_constant(self, button):
+        self.game_instance.td_consts[self.td_constant] -= self.adjustment
+        print 'decrease_constant', button.text, self.game_instance.td_consts
+        #self.label.text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant])
+
 class MetaTTTButton(Button):
     def __init__(self, *args, **kwargs):
         super(MetaTTTButton, self).__init__(*args, **kwargs)
@@ -23,7 +65,7 @@ class MetaTTTButton(Button):
         self.mini_x = kwargs['mini_x'] # x location on mini board
         self.mini_y = kwargs['mini_y'] # y location on mini board
 
-class TicTacToeGame(Widget):
+class MetaTicTacToeGame(Widget):
     window_frame = ObjectProperty(None) # root object that hold everything
     game_space = ObjectProperty(None)
     toolbar = ObjectProperty(None)
@@ -32,6 +74,7 @@ class TicTacToeGame(Widget):
     meta_board = ObjectProperty(None)
     game_info = ObjectProperty(None)
 
+    score_message = 'Score: AI: %d | Human %d'
 
     td_consts = {'c3': 0.767944, 'c2': 1.049451, 'c1': 3.074038, 'c6': 0.220823, 'c5': 0.181883, 'c4': 0.605861}
 
@@ -39,9 +82,20 @@ class TicTacToeGame(Widget):
         self.state = State()
         self.ai_first_button.bind(on_press = self.ai_plays_first)
         self.new_game.bind(on_press = self.start_new_game)
-        self.state_to_grid()
         self.app = app
-        self.game_info.text = 'Scroll: AI: %d | Human %d' % (0, 0)
+        self.game_info.text = self.score_message % (0, 0)
+
+        self.constant_adjusters = GridLayout()
+        self.constant_adjusters.cols = 6
+        #self.constant_adjusters.orientation = 'horizontal'
+        self.constant_adjusters.size_hint = (1, 0.2)
+        print dir(self.constant_adjusters)
+
+        for key in self.td_consts:
+            self.constant_adjuster = ConstantAdjuster(self, self.constant_adjusters, key)
+        self.game_space.add_widget(self.constant_adjusters)
+
+        self.state_to_grid()
 
     def start_new_game(self, button):
         # TODO: avoid this method by moving TicTacToeGame beneath a mother game method.
@@ -66,7 +120,7 @@ class TicTacToeGame(Widget):
         if is_win(self.state.boards[button.meta_y][button.meta_x]):
             # update human score
             self.state.score[str(self.state.min_piece)] += 1
-        self.game_info.text = ('Scroll: AI: %d | Human %d' %
+        self.game_info.text = (self.score_message %
                                (self.state.score[str(self.state.max_piece)],
                                 self.state.score[str(self.state.min_piece)]))
 
@@ -152,12 +206,16 @@ class TicTacToeGame(Widget):
         self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.state.min_piece)
         self.set_next_state(button)
 
-        self.update_score(button)
+        print self.state.score
+
+        #self.update_score(button)
         if self.check_win(): # check if the human just won
+            self.update_score(button)
             self.state_to_grid()
             return
 
         expected_utility, self.state = minimax_search(self.state, self.td_consts)
+        self.update_score(button)
         self.check_win() # check if the AI just won
         self.state_to_grid()
 
@@ -170,7 +228,7 @@ class TicTacToeGame(Widget):
 
 class PlayMetaTTTApp(App):
     def build(self):
-        tic_tac_toe_game = TicTacToeGame()
+        tic_tac_toe_game = MetaTicTacToeGame()
         tic_tac_toe_game.initialize(self)
         game_space = tic_tac_toe_game.window_frame
         return game_space
