@@ -15,47 +15,52 @@ from kivy.properties import ObjectProperty
 
 from kivy.uix.scrollview import ScrollView
 
-'''
-def increase_constant(button):
-    print button
-'''
-
-class ConstantAdjuster(Button):
-    adjustment = 0.2
-    def __init__(self, game_instance, box_container, td_constant, *args, **kwargs):
-        super(ConstantAdjuster, self).__init__(*args, **kwargs)
-
+class UpButton(Button):
+    adjustment = 0.05
+    def __init__(self, label, td_constant, game_instance, *args, **kwargs):
+        super(UpButton, self).__init__(*args, **kwargs)
+        self.label = label
         self.td_constant = td_constant
         self.game_instance = game_instance
 
-        self.box = BoxLayout()
-        self.box.orientation = 'vertical'
+    @staticmethod
+    def increase_constant(button):
+        button.game_instance.td_consts[button.td_constant] += button.adjustment
+        button.label.text = button.td_constant + ': ' + str(button.game_instance.td_consts[button.td_constant])
 
-        up = Button(text = '+')
-        up.bind(on_press = self.increase_constant)
-        self.label = Label(text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant]))
-        print self.td_constant, self.increase_constant, self, up
-        '''
-        self.down = Button(text = '-', on_press=self.decrease_constant)
-        '''
+class DownButton(Button):
+    adjustment = 0.05
+    def __init__(self, label, td_constant, game_instance, *args, **kwargs):
+        super(DownButton, self).__init__(*args, **kwargs)
+        self.label = label
+        self.td_constant = td_constant
+        self.game_instance = game_instance
 
-        '''
-        self.box.add_widget(up)
-        self.box.add_widget(self.label)
-        box.add_widget(self.down)
-        '''
+    @staticmethod
+    def decrease_constant(button):
+        button.game_instance.td_consts[button.td_constant] -= button.adjustment
+        button.label.text = button.td_constant + ': ' + str(button.game_instance.td_consts[button.td_constant])
 
-        box_container.add_widget(up)
+class ConstantAdjuster():
+    adjustment = 0.2
+    def __init__(self, game_instance, box_container, td_constant):
+        self.td_constant = td_constant
+        self.game_instance = game_instance
 
-    def increase_constant(self, button):
-        self.game_instance.td_consts[self.td_constant] += self.adjustment
-        print 'increase_constant', button.text, self.game_instance.td_consts
-        #self.label.text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant])
+        box = BoxLayout()
+        box.orientation = 'vertical'
 
-    def decrease_constant(self, button):
-        self.game_instance.td_consts[self.td_constant] -= self.adjustment
-        print 'decrease_constant', button.text, self.game_instance.td_consts
-        #self.label.text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant])
+        label = Label(text = self.td_constant + ': ' + str(self.game_instance.td_consts[self.td_constant]))
+        up = UpButton(label, td_constant, game_instance, text = '+')
+        up.bind(on_press = UpButton.increase_constant)
+        down = DownButton(label, td_constant, game_instance, text = '-')
+        down.bind(on_press = DownButton.decrease_constant)
+
+        box.add_widget(up)
+        box.add_widget(label)
+        box.add_widget(down)
+
+        box_container.add_widget(box)
 
 class MetaTTTButton(Button):
     def __init__(self, *args, **kwargs):
@@ -87,9 +92,7 @@ class MetaTicTacToeGame(Widget):
 
         self.constant_adjusters = GridLayout()
         self.constant_adjusters.cols = 6
-        #self.constant_adjusters.orientation = 'horizontal'
         self.constant_adjusters.size_hint = (1, 0.2)
-        print dir(self.constant_adjusters)
 
         for key in self.td_consts:
             self.constant_adjuster = ConstantAdjuster(self, self.constant_adjusters, key)
@@ -205,8 +208,6 @@ class MetaTicTacToeGame(Widget):
 
         self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.state.min_piece)
         self.set_next_state(button)
-
-        print self.state.score
 
         #self.update_score(button)
         if self.check_win(): # check if the human just won
