@@ -38,6 +38,8 @@ class MiniBoard {
 
         bool isOver(); // is full or win
 
+        int getScore(char player);
+
         int getNumCenterPieces(char player);
 
         int getNumCornerPieces(char player);

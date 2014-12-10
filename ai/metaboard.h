@@ -16,7 +16,7 @@ class MetaBoard {
         };
 
         int next_mini_board = 4;
-        int next_player = 2;
+        int next_player = 1;
         int player_max = -1;
 
         void printMe();
@@ -31,5 +31,15 @@ class MetaBoard {
 
         vector<MetaBoard> generateChildren();
 
-        double computeUtility();
+        float getScore(char player);
+        float getNumCenterPieces(char player);
+        float getNumCornerPieces(char player);
+        float getNumSidePieces(char player);
+        
+        float getPlayerOneBlocking();
+        float getPlayerOnePotential();
+        float getPlayerTwoBlocking();
+        float getPlayerTwoPotential();
+
+        float computeUtility();
 };

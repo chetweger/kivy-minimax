@@ -34,6 +34,8 @@ void run_tests() {
 }
 
 int main() {
+    cout << (int) MiniBoard::PLAYER_ONE << "\n";
+
     run_tests();
 
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
@@ -48,9 +50,13 @@ int main() {
         childrens[i].printMe();
     }
 
-    constants td_constants;
+    cout << "\nUtility: " << state.computeUtility() << "\n"; 
 
-    cout << "c1 is" << td_constants.c1;
+    //constants td_constants;
+
+    //cout << "c1 is" << td_constants.c1;
+
+    cout << "\nconstants " << td_constants.c1 << "\n";
 
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "metaboard.h"
+#include "constants.h"
 
 MetaBoard::MetaBoard() {
 }
@@ -27,10 +28,13 @@ MetaBoard MetaBoard::operator=(MetaBoard meta) {
 }
 
 char MetaBoard::generateNextPlayer(char current_player) {
-    if (current_player == MiniBoard::PLAYER_TWO) {
+    cout << (int) MiniBoard::PLAYER_ONE << " one | player " << (int) current_player << "\n";
+    cout << (int) MiniBoard::PLAYER_TWO << " one | player " << (int) current_player << "\n";
+    cout << "Equality\n" << ((int) MiniBoard::PLAYER_TWO == (int) current_player) << "\n";
+    if ((int) current_player == (int) MiniBoard::PLAYER_TWO) {
         return MiniBoard::PLAYER_ONE;
     } else {
-        assert(current_player == MiniBoard::PLAYER_ONE);
+        assert((int) current_player == (int) MiniBoard::PLAYER_ONE);
         return MiniBoard::PLAYER_TWO;
     }
 }
@@ -75,26 +79,92 @@ vector<MetaBoard> MetaBoard::generateChildren() {
     return children;
 }
 
-double MetaBoard::computeUtility() {
-    double score_player_1 = 0.0;
-    double score_player_2 = 0.0;
+float MetaBoard::getScore(char player) {
+    float score = 0;
     for (int i = 0; i < 9; i++) {
-        score_player_1 += this->getScore(MiniBoard::PLAYER_ONE);
-        score_player_1 += this->getNumCenterPieces(MiniBoard::PLAYER_ONE);
-        score_player_1 += this->getNumCornerPieces(MiniBoard::PLAYER_ONE);
-        score_player_1 += this->getNumSidePieces(MiniBoard::PLAYER_ONE);
-        score_player_1 += this->getPlayerOneBlocking(MiniBoard::PLAYER_ONE);
-        score_player_1 += this->getPlayerOnePotential(MiniBoard::PLAYER_ONE);
+        score += this->boards[i].getScore(player);
+    }
+    return score;
+}
 
-        score_player_2 += this->getScore(MiniBoard::PLAYER_TWO);
-        score_player_2 += this->getNumCenterPieces(MiniBoard::PLAYER_TWO);
-        score_player_2 += this->getNumCornerPieces(MiniBoard::PLAYER_TWO);
-        score_player_2 += this->getNumSidePieces(MiniBoard::PLAYER_TWO);
-        score_player_2 += this->getPlayerOneBlocking(MiniBoard::PLAYER_TWO);
-        score_player_2 += this->getPlayerOnePotential(MiniBoard::PLAYER_TWO);
+float MetaBoard::getNumCenterPieces(char player) {
+    float pieces = 0;
+    for (int i = 0; i < 9; i++) {
+        pieces += this->boards[i].getNumCenterPieces(player);
+    }
+    return pieces;
+}
+
+float MetaBoard::getNumCornerPieces(char player) {
+    float pieces = 0;
+    for (int i = 0; i < 9; i++) {
+        pieces += this->boards[i].getNumCornerPieces(player);
+    }
+    return pieces;
+}
+
+float MetaBoard::getNumSidePieces(char player) {
+    float pieces = 0;
+    for (int i = 0; i < 9; i++) {
+        pieces += this->boards[i].getNumSidePieces(player);
+    }
+    return pieces;
+}
+
+float MetaBoard::getPlayerOneBlocking() {
+    float positions = 0;
+    for (int i = 0; i < 9; i++) {
+        positions += this->boards[i].getPlayerOneBlocking();
+    }
+    return positions;
+}
+
+float MetaBoard::getPlayerOnePotential() {
+    float positions = 0;
+    for (int i = 0; i < 9; i++) {
+        positions += this->boards[i].getPlayerOnePotential();
+    }
+    return positions;
+}
+
+float MetaBoard::getPlayerTwoBlocking() {
+    float positions = 0;
+    for (int i = 0; i < 9; i++) {
+        positions += this->boards[i].getPlayerTwoBlocking();
+    }
+    return positions;
+}
+
+float MetaBoard::getPlayerTwoPotential() {
+    float positions = 0;
+    for (int i = 0; i < 9; i++) {
+        positions += this->boards[i].getPlayerTwoPotential();
+    }
+    return positions;
+}
+
+float MetaBoard::computeUtility() {
+    float score_player_1 = 0.0;
+    float score_player_2 = 0.0;
+    for (int i = 0; i < 9; i++) {
+        score_player_1 += td_constants.c1 * this->getScore(MiniBoard::PLAYER_ONE);
+        score_player_1 += td_constants.c2 * this->getNumCenterPieces(MiniBoard::PLAYER_ONE);
+        score_player_1 += td_constants.c3 * this->getNumCornerPieces(MiniBoard::PLAYER_ONE);
+        score_player_1 += td_constants.c4 * this->getNumSidePieces(MiniBoard::PLAYER_ONE);
+        score_player_1 += td_constants.c5 * this->getPlayerOneBlocking();
+        score_player_1 += td_constants.c6 * this->getPlayerOnePotential();
+
+        score_player_2 += td_constants.c1 * this->getScore(MiniBoard::PLAYER_TWO);
+        score_player_2 += td_constants.c2 * this->getNumCenterPieces(MiniBoard::PLAYER_TWO);
+        score_player_2 += td_constants.c3 * this->getNumCornerPieces(MiniBoard::PLAYER_TWO);
+        score_player_2 += td_constants.c4 * this->getNumSidePieces(MiniBoard::PLAYER_TWO);
+        score_player_2 += td_constants.c5 * this->getPlayerOneBlocking();
+        score_player_2 += td_constants.c6 * this->getPlayerOnePotential();
     }
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {
-
+        return score_player_2 - score_player_1;
+    } else {
+        return score_player_1 - score_player_2;
     }
 }
