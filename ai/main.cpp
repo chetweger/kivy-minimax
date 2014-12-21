@@ -48,11 +48,5 @@ int main() {
     state.printMe();
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
 
-    //constants td_constants;
-
-    //cout << "c1 is" << td_constants.c1;
-
-    cout << "\nconstants " << td_constants.c1 << "\n";
-
     return 0;
 }

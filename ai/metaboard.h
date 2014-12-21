@@ -1,5 +1,7 @@
 #include "miniboard.cpp"
 #include <vector>
+#include "constants.h"
+
 class MetaBoard {
     public:
         MetaBoard(); // constructor
@@ -19,11 +21,18 @@ class MetaBoard {
         int next_player = 1;
         int player_max = -1;
 
+        float myUtility;
+
         void printMe();
 
         MetaBoard clone();
 
         MetaBoard operator=(MetaBoard mini);
+
+        bool operator>(MetaBoard other);
+        bool operator<(MetaBoard other);
+        bool operator>=(MetaBoard other);
+        bool operator<=(MetaBoard other);
 
         char generateNextPlayer();
 

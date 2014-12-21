@@ -1,5 +1,4 @@
 #include "metaboard.h"
-#include "constants.h"
 
 MetaBoard::MetaBoard() {
 }
@@ -26,6 +25,22 @@ MetaBoard MetaBoard::clone() {
 
 MetaBoard MetaBoard::operator=(MetaBoard meta) {
     return meta.clone();
+}
+
+bool MetaBoard::operator>(MetaBoard other) {
+    return this->myUtility > other.myUtility;
+}
+
+bool MetaBoard::operator<(MetaBoard other) {
+    return this->myUtility < other.myUtility;
+}
+
+bool MetaBoard::operator>=(MetaBoard other) {
+    return this->myUtility >= other.myUtility;
+}
+
+bool MetaBoard::operator<=(MetaBoard other) {
+    return this->myUtility <= other.myUtility;
 }
 
 char MetaBoard::generateNextPlayer() {

@@ -7,5 +7,4 @@ struct constants {
     float c6 = 0.15;
 };
 
-struct constants td_constants;
-
+static const struct constants td_constants;
