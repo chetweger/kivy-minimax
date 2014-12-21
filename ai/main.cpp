@@ -39,17 +39,13 @@ int main() {
     run_tests();
 
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
-    state.boards[3].board[3] = 23;
+    state.boards[3].board[3] = 4;
     state.boards[4].board[0] = 1;
     state.boards[4].board[1] = 1;
     state.boards[4].board[2] = 1;
 
+    state.player_max = 1;
     state.printMe();
-    vector<MetaBoard> childrens = state.generateChildren();
-    for (int i = 0; i < childrens.size(); i++) {
-        childrens[i].printMe();
-    }
-
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
 
     //constants td_constants;

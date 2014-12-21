@@ -25,7 +25,7 @@ class MetaBoard {
 
         MetaBoard operator=(MetaBoard mini);
 
-        char generateNextPlayer(char current_player);
+        char generateNextPlayer();
 
         vector<MetaBoard> generateChildrenAux();
 
