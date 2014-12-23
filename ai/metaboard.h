@@ -21,6 +21,8 @@ class MetaBoard {
         int next_player = 1;
         int player_max = -1;
 
+        int searchDepth = -1; // TODO: make sure clone works for ALL constants!!!!!!!
+
         float myUtility;
 
         void printMe();
@@ -51,4 +53,8 @@ class MetaBoard {
         float getPlayerTwoPotential();
 
         float computeUtility();
+
+        MetaBoard minimaxSearch(MetaBoard state, int searchDepth);
+        MetaBoard minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);
+        MetaBoard maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);
 };

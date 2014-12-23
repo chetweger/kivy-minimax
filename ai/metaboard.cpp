@@ -19,6 +19,8 @@ MetaBoard MetaBoard::clone() {
         cloned.next_mini_board = this->next_mini_board;
         cloned.next_player = this->next_player;
         cloned.player_max = this->player_max;
+        cloned.searchDepth = this->searchDepth;
+        cloned.myUtility = this->myUtility;
     }
     return cloned;
 }
@@ -62,6 +64,7 @@ vector<MetaBoard> MetaBoard::generateChildrenAux() {
                 child.boards[next_mini_board].board[i] = this->next_player;
                 child.next_mini_board = i;
                 child.next_player = childs_next_player;
+                child.computeUtility();
                 children.push_back(child);
             }
         }
@@ -160,6 +163,7 @@ float MetaBoard::computeUtility() {
     float score_player_1 = 0.0;
     float score_player_2 = 0.0;
 
+    // TODO: need to not count subutils on boards that are full or won.
     score_player_1 += td_constants.c1 * this->getScore(MiniBoard::PLAYER_ONE);
     score_player_1 += td_constants.c2 * this->getNumCenterPieces(MiniBoard::PLAYER_ONE);
     score_player_1 += td_constants.c3 * this->getNumCornerPieces(MiniBoard::PLAYER_ONE);
@@ -175,8 +179,30 @@ float MetaBoard::computeUtility() {
     score_player_2 += td_constants.c6 * this->getPlayerOnePotential();
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {
-        return score_player_2 - score_player_1;
+        this->myUtility = score_player_2 - score_player_1;
     } else {
-        return score_player_1 - score_player_2;
+        this->myUtility = score_player_1 - score_player_2;
     }
+
+    return this->myUtility;
+}
+
+MetaBoard MetaBoard::minimaxSearch(int searchDepth) {
+    this->searchDepth = searchDepth;
+    MetaBoard alpha = *this;
+    alpha.myUtility = -9005.;
+    MetaBoard beta = *this;
+    beta.myUtility = 9005.;
+    return this->maxSearch(searchDepth, alpha, beta);
+}
+
+MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta) {
+    MetaBoard parent = *this;
+    vector<MetaBoard> children = parent->generateChildren();
+    return state;
+}
+
+MetaBoard MetaBoard::minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta) {
+    MetaBoard parent = *this;
+    return state;
 }
