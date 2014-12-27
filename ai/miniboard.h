@@ -14,8 +14,8 @@ class MiniBoard {
         const static char PLAYER_ONE = 1;
         const static char PLAYER_TWO = 4;
 
-        const static char PLAYER_ONE_BLOCKING = PLAYER_TWO + PLAYER_ONE * 2;
-        const static char PLAYER_TWO_BLOCKING = PLAYER_TWO * 2 + PLAYER_ONE;
+        const static char PLAYER_ONE_BLOCKING = PLAYER_TWO * 2 + PLAYER_ONE;
+        const static char PLAYER_TWO_BLOCKING = PLAYER_TWO + PLAYER_ONE * 2;
 
         const static char PLAYER_ONE_POTENTIAL = PLAYER_ONE * 2;
         const static char PLAYER_TWO_POTENTIAL = PLAYER_TWO * 2;

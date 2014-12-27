@@ -31,6 +31,17 @@ void run_tests() {
     assert(!c.isOver());
     
     cout << "Tests Passed!\n";
+
+    MiniBoard test_potential(0);
+    char test_potential_board[9] = {0, 4, 4, 0, 0, 0, 1, 0, 1};
+    test_potential.setBoard(test_potential_board);
+    assert(test_potential.getPlayerOnePotential());
+    assert(test_potential.getPlayerTwoPotential());
+
+    MiniBoard test_blocking(0);
+    char test_blocking_board[9] = {4, 0, 0, 0, 1, 0, 0, 0, 4};
+    test_blocking.setBoard(test_blocking_board);
+    assert(test_blocking.getPlayerOneBlocking());
 }
 
 int main() {
