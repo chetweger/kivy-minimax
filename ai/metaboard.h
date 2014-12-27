@@ -29,6 +29,8 @@ class MetaBoard {
 
         MetaBoard clone();
 
+        MetaBoard copyOver(MetaBoard *);
+
         MetaBoard operator=(MetaBoard mini);
 
         bool operator>(MetaBoard other);
@@ -54,7 +56,7 @@ class MetaBoard {
 
         float computeUtility();
 
-        MetaBoard minimaxSearch(MetaBoard state, int searchDepth);
+        MetaBoard minimaxSearch(int searchDepth);
         MetaBoard minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);
         MetaBoard maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);
 };

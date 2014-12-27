@@ -39,14 +39,20 @@ int main() {
     run_tests();
 
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
+    /**
     state.boards[3].board[3] = 4;
     state.boards[4].board[0] = 1;
     state.boards[4].board[1] = 1;
     state.boards[4].board[2] = 1;
 
     state.player_max = 1;
-    state.printMe();
+    */
+    //state.printMe();
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
+
+    MetaBoard bestChild = state.minimaxSearch(4);
+
+    bestChild.printMe();
 
     return 0;
 }

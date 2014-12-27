@@ -9,6 +9,7 @@ void MetaBoard::printMe() {
     for (int i = 0; i < 9; i++) {
         this->boards[i].printMe();
     }
+    cout << "Utility is: " << this->myUtility << "\n";
 }
 
 MetaBoard MetaBoard::clone() {
@@ -16,13 +17,26 @@ MetaBoard MetaBoard::clone() {
     for (int i = 0; i < 9; i++) {
         // Make identical copies of all boards.
         cloned.boards[i] = this->boards[i].copyMe(cloned.boards[i]);
-        cloned.next_mini_board = this->next_mini_board;
-        cloned.next_player = this->next_player;
-        cloned.player_max = this->player_max;
-        cloned.searchDepth = this->searchDepth;
-        cloned.myUtility = this->myUtility;
     }
+    cloned.next_mini_board = this->next_mini_board;
+    cloned.next_player = this->next_player;
+    cloned.player_max = this->player_max;
+    cloned.searchDepth = this->searchDepth;
+    cloned.myUtility = this->myUtility;
     return cloned;
+}
+
+MetaBoard MetaBoard::copyOver(MetaBoard * cloned) {
+    for (int i = 0; i < 9; i++) {
+        // Make identical copies of all boards.
+        cloned->boards[i] = this->boards[i].copyMe(cloned->boards[i]);
+    }
+    cloned->next_mini_board = this->next_mini_board;
+    cloned->next_player = this->next_player;
+    cloned->player_max = this->player_max;
+    cloned->searchDepth = this->searchDepth;
+    cloned->myUtility = this->myUtility;
+    return * cloned;
 }
 
 MetaBoard MetaBoard::operator=(MetaBoard meta) {
@@ -30,6 +44,7 @@ MetaBoard MetaBoard::operator=(MetaBoard meta) {
 }
 
 bool MetaBoard::operator>(MetaBoard other) {
+    //cout << "Calling MetaBoard > " << this->myUtility << "\t" << other.myUtility << "\t\n";
     return this->myUtility > other.myUtility;
 }
 
@@ -175,8 +190,8 @@ float MetaBoard::computeUtility() {
     score_player_2 += td_constants.c2 * this->getNumCenterPieces(MiniBoard::PLAYER_TWO);
     score_player_2 += td_constants.c3 * this->getNumCornerPieces(MiniBoard::PLAYER_TWO);
     score_player_2 += td_constants.c4 * this->getNumSidePieces(MiniBoard::PLAYER_TWO);
-    score_player_2 += td_constants.c5 * this->getPlayerOneBlocking();
-    score_player_2 += td_constants.c6 * this->getPlayerOnePotential();
+    score_player_2 += td_constants.c5 * this->getPlayerTwoBlocking();
+    score_player_2 += td_constants.c6 * this->getPlayerTwoPotential();
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {
         this->myUtility = score_player_2 - score_player_1;
@@ -198,11 +213,34 @@ MetaBoard MetaBoard::minimaxSearch(int searchDepth) {
 
 MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta) {
     MetaBoard parent = *this;
-    vector<MetaBoard> children = parent->generateChildren();
-    return state;
+    vector<MetaBoard> children = parent.generateChildren();
+    // base cases ...
+    if (children.size() <= 0 || searchDepth <= 0) {
+        return *this;
+    }
+    MetaBoard highest = children[0].minSearch(searchDepth - 1, alpha, beta);
+    for (int i = 1; i < children.size(); i++) {
+        MetaBoard possibleHighest = children[i].minSearch(searchDepth - 1, alpha, beta);
+        if (possibleHighest.myUtility > highest.myUtility) {
+            possibleHighest.copyOver(&highest);
+        }
+    }
+    return highest;
 }
 
 MetaBoard MetaBoard::minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta) {
     MetaBoard parent = *this;
-    return state;
+    vector<MetaBoard> children = parent.generateChildren();
+    // base cases ...
+    if (children.size() <= 0 || searchDepth <= 0) {
+        return *this;
+    }
+    MetaBoard lowest = children[0].maxSearch(searchDepth - 1, alpha, beta);
+    for (int i = 1; i < children.size(); i++) {
+        MetaBoard possibleLowest = children[i].maxSearch(searchDepth - 1, alpha, beta);
+        if (possibleLowest < lowest) {
+            possibleLowest.copyOver(&lowest); 
+        }
+    }
+    return lowest;
 }
