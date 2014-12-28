@@ -42,6 +42,40 @@ void run_tests() {
     char test_blocking_board[9] = {4, 0, 0, 0, 1, 0, 0, 0, 4};
     test_blocking.setBoard(test_blocking_board);
     assert(test_blocking.getPlayerOneBlocking());
+
+    MetaBoard utilityTest;
+    utilityTest.boards[0].board[2] = 4;
+    utilityTest.boards[0].board[4] = 4;
+    utilityTest.boards[0].board[6] = 4;
+
+    utilityTest.boards[1].board[2] = 4;
+    utilityTest.boards[1].board[5] = 4;
+    utilityTest.boards[1].board[8] = 1;
+
+    utilityTest.boards[2].board[4] = 4;
+    utilityTest.boards[2].board[6] = 4;
+    /**
+    */
+
+    utilityTest.player_max = 1;
+    utilityTest.next_player = 1;
+
+    utilityTest.computeUtility();
+
+    cout << "myUtility is: " << utilityTest.myUtility;
+    cout << "Expected utility is: " << (td_constants.c1 + 
+                                     td_constants.c2 + 
+                                     td_constants.c3 + 
+                                     td_constants.c4 - 
+                                     td_constants.c5 + 
+                                     td_constants.c6);
+
+    assert(utilityTest.myUtility == (td_constants.c1 + 
+                                     td_constants.c2 + 
+                                     td_constants.c3 + 
+                                     td_constants.c4 - 
+                                     td_constants.c5 + 
+                                     td_constants.c6));
 }
 
 int main() {
@@ -61,7 +95,7 @@ int main() {
     //state.printMe();
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
 
-    MetaBoard bestChild = state.minimaxSearch(4);
+    MetaBoard bestChild = state.minimaxSearch(5);
 
     bestChild.printMe();
 

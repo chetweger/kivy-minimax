@@ -178,27 +178,33 @@ float MetaBoard::computeUtility() {
     float score_player_1 = 0.0;
     float score_player_2 = 0.0;
 
-    // TODO: need to not count subutils on boards that are full or won.
-    score_player_1 += td_constants.c1 * this->getScore(MiniBoard::PLAYER_ONE);
-    score_player_1 += td_constants.c2 * this->getNumCenterPieces(MiniBoard::PLAYER_ONE);
-    score_player_1 += td_constants.c3 * this->getNumCornerPieces(MiniBoard::PLAYER_ONE);
-    score_player_1 += td_constants.c4 * this->getNumSidePieces(MiniBoard::PLAYER_ONE);
-    score_player_1 += td_constants.c5 * this->getPlayerOneBlocking();
-    score_player_1 += td_constants.c6 * this->getPlayerOnePotential();
+    int player_one_scored = -1;
+    int player_two_scored = -1;
+    for (int i = 0; i < 9; i++) {
+        player_one_scored = this->boards[i].getScore(MiniBoard::PLAYER_ONE);
+        player_two_scored = this->boards[i].getScore(MiniBoard::PLAYER_TWO);
+        score_player_1 += td_constants.c1 * player_one_scored;
+        score_player_2 += td_constants.c1 * player_two_scored;
+        if ( ! (player_one_scored || player_two_scored)){
+            score_player_1 += td_constants.c2 * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_ONE);
+            score_player_1 += td_constants.c3 * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_ONE);
+            score_player_1 += td_constants.c4 * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_ONE);
+            score_player_1 += td_constants.c5 * this->boards[i].getPlayerOneBlocking();
+            score_player_1 += td_constants.c6 * this->boards[i].getPlayerOnePotential();
 
-    score_player_2 += td_constants.c1 * this->getScore(MiniBoard::PLAYER_TWO);
-    score_player_2 += td_constants.c2 * this->getNumCenterPieces(MiniBoard::PLAYER_TWO);
-    score_player_2 += td_constants.c3 * this->getNumCornerPieces(MiniBoard::PLAYER_TWO);
-    score_player_2 += td_constants.c4 * this->getNumSidePieces(MiniBoard::PLAYER_TWO);
-    score_player_2 += td_constants.c5 * this->getPlayerTwoBlocking();
-    score_player_2 += td_constants.c6 * this->getPlayerTwoPotential();
+            score_player_2 += td_constants.c2 * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_TWO);
+            score_player_2 += td_constants.c3 * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_TWO);
+            score_player_2 += td_constants.c4 * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_TWO);
+            score_player_2 += td_constants.c5 * this->boards[i].getPlayerTwoBlocking();
+            score_player_2 += td_constants.c6 * this->boards[i].getPlayerTwoPotential();
+        }
+    }
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {
         this->myUtility = score_player_2 - score_player_1;
     } else {
         this->myUtility = score_player_1 - score_player_2;
     }
-
     return this->myUtility;
 }
 
