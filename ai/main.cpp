@@ -2,6 +2,7 @@
 #include <iostream> 
 #include <string> 
 #include <bitset> 
+#include <ctime>
 //uncomment to disable assert() 
 ////#define NDEBUG 
 //#include <cassert> 
@@ -78,26 +79,50 @@ void run_tests() {
                                      td_constants.c6));
 }
 
+bool second_greater_than_first(MetaBoard a, MetaBoard b) {
+    return a.myUtility < b.myUtility;
+}
+
+
 int main() {
+    /**
     cout << (int) MiniBoard::PLAYER_ONE << "\n";
 
     run_tests();
 
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
-    /**
-    state.boards[3].board[3] = 4;
-    state.boards[4].board[0] = 1;
-    state.boards[4].board[1] = 1;
-    state.boards[4].board[2] = 1;
 
-    state.player_max = 1;
-    */
-    //state.printMe();
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
 
-    MetaBoard bestChild = state.minimaxSearch(5);
+    int start = time(0);
+    //MetaBoard bestChild = state.minimaxSearch(8, false);
+    int end = time(0);
 
     bestChild.printMe();
+
+    cout << "Time elapsed is: " << end - start << "\n";
+    */
+
+    vector<MetaBoard> boards;
+    MetaBoard aa;
+    aa.myUtility = 0;
+    boards.push_back(aa);
+    MetaBoard bb;
+    bb.myUtility = 2;
+    boards.push_back(bb);
+    MetaBoard cc;
+    cc.myUtility = 1;
+    boards.push_back(cc);
+
+    cout << "0 :" << boards.at(0).myUtility << "\n";
+    cout << "1 :" << boards.at(1).myUtility << "\n";
+    cout << "2 :" << boards.at(2).myUtility << "\n";
+
+    sort(boards.begin(), boards.end(), second_greater_than_first);
+
+    cout << "0 :" << boards[0].myUtility << "\n";
+    cout << "1 :" << boards[1].myUtility << "\n";
+    cout << "2 :" << boards[2].myUtility << "\n";
 
     return 0;
 }

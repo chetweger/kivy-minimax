@@ -33,8 +33,8 @@ class MetaBoard {
 
         MetaBoard operator=(MetaBoard mini);
 
-        bool operator>(MetaBoard other);
-        bool operator<(MetaBoard other);
+        bool operator>(const MetaBoard other) const;
+        bool operator<(const MetaBoard other) const;
         bool operator>=(MetaBoard other);
         bool operator<=(MetaBoard other);
 
@@ -56,7 +56,7 @@ class MetaBoard {
 
         float computeUtility();
 
-        MetaBoard minimaxSearch(int searchDepth);
+        MetaBoard minimaxSearch(int searchDepth, bool getNextMove);
         MetaBoard minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);
-        MetaBoard maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);
+        MetaBoard maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta, bool getNextMove);
 };

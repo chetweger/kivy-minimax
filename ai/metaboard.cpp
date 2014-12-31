@@ -1,4 +1,5 @@
 #include "metaboard.h"
+#include <algorithm>
 
 MetaBoard::MetaBoard() {
 }
@@ -43,20 +44,21 @@ MetaBoard MetaBoard::operator=(MetaBoard meta) {
     return meta.clone();
 }
 
-bool MetaBoard::operator>(MetaBoard other) {
-    //cout << "Calling MetaBoard > " << this->myUtility << "\t" << other.myUtility << "\t\n";
+bool MetaBoard::operator > (const MetaBoard other) const {
+    cout << "> this " << this->myUtility << " other: " << other.myUtility << "\n";
     return this->myUtility > other.myUtility;
 }
 
-bool MetaBoard::operator<(MetaBoard other) {
+bool MetaBoard::operator < (const MetaBoard other) const {
+    cout << "< this " << this->myUtility << " other: " << other.myUtility << "\n";
     return this->myUtility < other.myUtility;
 }
 
-bool MetaBoard::operator>=(MetaBoard other) {
+bool MetaBoard::operator >= (MetaBoard other) {
     return this->myUtility >= other.myUtility;
 }
 
-bool MetaBoard::operator<=(MetaBoard other) {
+bool MetaBoard::operator <= (MetaBoard other) {
     return this->myUtility <= other.myUtility;
 }
 
@@ -208,27 +210,39 @@ float MetaBoard::computeUtility() {
     return this->myUtility;
 }
 
-MetaBoard MetaBoard::minimaxSearch(int searchDepth) {
+MetaBoard MetaBoard::minimaxSearch(int searchDepth, bool getNextMove) {
     this->searchDepth = searchDepth;
     MetaBoard alpha = *this;
     alpha.myUtility = -9005.;
     MetaBoard beta = *this;
     beta.myUtility = 9005.;
-    return this->maxSearch(searchDepth, alpha, beta);
+    return this->maxSearch(searchDepth, alpha, beta, getNextMove);
 }
 
-MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta) {
+MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta, bool getNextMove) {
     MetaBoard parent = *this;
     vector<MetaBoard> children = parent.generateChildren();
     // base cases ...
     if (children.size() <= 0 || searchDepth <= 0) {
         return *this;
     }
-    MetaBoard highest = children[0].minSearch(searchDepth - 1, alpha, beta);
+    MetaBoard highest;
+    if (getNextMove) {
+        children[0].copyOver(&highest);;
+    } else {
+        children[0].minSearch(searchDepth - 1, alpha, beta).copyOver(&highest);
+    }
     for (int i = 1; i < children.size(); i++) {
-        MetaBoard possibleHighest = children[i].minSearch(searchDepth - 1, alpha, beta);
-        if (possibleHighest.myUtility > highest.myUtility) {
-            possibleHighest.copyOver(&highest);
+        MetaBoard possibleHighest = children[i].minSearch(searchDepth - 1, highest, beta);
+        if (possibleHighest > highest) {
+            if (getNextMove) {
+                children[i].copyOver(&highest);
+            } else {
+                possibleHighest.copyOver(&highest);
+            }
+        }
+        if (possibleHighest >= beta) {
+            break;
         }
     }
     return highest;
@@ -241,11 +255,14 @@ MetaBoard MetaBoard::minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta)
     if (children.size() <= 0 || searchDepth <= 0) {
         return *this;
     }
-    MetaBoard lowest = children[0].maxSearch(searchDepth - 1, alpha, beta);
+    MetaBoard lowest = children[0].maxSearch(searchDepth - 1, alpha, beta, false);
     for (int i = 1; i < children.size(); i++) {
-        MetaBoard possibleLowest = children[i].maxSearch(searchDepth - 1, alpha, beta);
+        MetaBoard possibleLowest = children[i].maxSearch(searchDepth - 1, alpha, lowest, false);
         if (possibleLowest < lowest) {
             possibleLowest.copyOver(&lowest); 
+        }
+        if (possibleLowest <= alpha) {
+            break;
         }
     }
     return lowest;
