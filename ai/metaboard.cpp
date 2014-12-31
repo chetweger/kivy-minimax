@@ -40,17 +40,11 @@ MetaBoard MetaBoard::copyOver(MetaBoard * cloned) {
     return * cloned;
 }
 
-MetaBoard MetaBoard::operator=(MetaBoard meta) {
-    return meta.clone();
-}
-
 bool MetaBoard::operator > (const MetaBoard other) const {
-    cout << "> this " << this->myUtility << " other: " << other.myUtility << "\n";
     return this->myUtility > other.myUtility;
 }
 
 bool MetaBoard::operator < (const MetaBoard other) const {
-    cout << "< this " << this->myUtility << " other: " << other.myUtility << "\n";
     return this->myUtility < other.myUtility;
 }
 
@@ -109,6 +103,7 @@ vector<MetaBoard> MetaBoard::generateChildren() {
             children.insert(children.end(), board_i_children.begin(), board_i_children.end());
         }
     }
+    sort(children.begin(), children.end(), greater<MetaBoard>());
     return children;
 }
 

@@ -31,8 +31,6 @@ class MetaBoard {
 
         MetaBoard copyOver(MetaBoard *);
 
-        MetaBoard operator=(MetaBoard mini);
-
         bool operator>(const MetaBoard other) const;
         bool operator<(const MetaBoard other) const;
         bool operator>=(MetaBoard other);
