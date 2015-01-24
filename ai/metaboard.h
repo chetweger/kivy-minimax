@@ -31,6 +31,8 @@ class MetaBoard {
 
         MetaBoard copyOver(MetaBoard *);
 
+        static MetaBoard loadMetaBoard(char* args[], MetaBoard * metaBoard);
+
         bool operator>(const MetaBoard other) const;
         bool operator<(const MetaBoard other) const;
         bool operator>=(MetaBoard other);

@@ -38,6 +38,46 @@ messageWelcome       = "Welcome to meta tic tac toe!"
 messageYouWin      = "User wins."
 messageCompWin       = "Computer Wins"
 
+def call_main():
+  from ctypes import *
+  lib = CDLL("./libmean.so.1.0.1")
+  '''
+  arglist = [
+          "\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x01\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x04\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+          "\x00\x00\x00\x00\x00\x04\x00\x00\x00",
+          "\x00\x00\x00\x00\x00"
+          ]
+  '''
+  arglist = [
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9),
+          create_string_buffer(9)
+          #create_string_buffer(5),
+          ]
+  options = (c_char_p * 9)(*arglist)
+  return options
+  #options[:] = arglist
+  print "before: ", options
+  lib.main(c_int(2), options)
+
+  print "after: ", options
+  return options
+
+#call_main()
+
 def has_row(list_dict):
   '''returns true we have [DIMENSION] in a row
   '''

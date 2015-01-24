@@ -27,6 +27,18 @@ MetaBoard MetaBoard::clone() {
     return cloned;
 }
 
+MetaBoard MetaBoard::loadMetaBoard(char* args[], MetaBoard * metaBoard) {
+    for (int i = 0; i < 9; i++) {
+        metaBoard->boards[i].setBoard(args[i]);
+    }
+    metaBoard->next_mini_board = (int) args[9][0];
+    metaBoard->next_player = (int) args[9][1];
+    metaBoard->player_max = (int) args[9][2];
+    metaBoard->searchDepth = (int) args[9][3];
+    metaBoard->myUtility = (int) args[9][4];
+    return * metaBoard;
+}
+
 MetaBoard MetaBoard::copyOver(MetaBoard * cloned) {
     for (int i = 0; i < 9; i++) {
         // Make identical copies of all boards.
@@ -60,7 +72,7 @@ char MetaBoard::generateNextPlayer() {
     if ((int) next_player == (int) MiniBoard::PLAYER_TWO) {
         return MiniBoard::PLAYER_ONE;
     } else {
-        assert((int) next_player == (int) MiniBoard::PLAYER_ONE);
+        //assert((int) next_player == (int) MiniBoard::PLAYER_ONE);
         return MiniBoard::PLAYER_TWO;
     }
 }

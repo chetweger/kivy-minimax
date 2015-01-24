@@ -77,8 +77,29 @@ void run_tests() {
                                      td_constants.c6));
 }
 
-int main() {
-    cout << (int) MiniBoard::PLAYER_ONE << "\n";
+int main(int numArgs, char* args[]) {
+    cout << "Num args:\n";
+
+    cout << numArgs;
+
+    if (numArgs > 1) {
+
+        cout << "\n";
+
+        cout << "args is: " << (int) args[0][0] << "\n";
+        cout << "args is: " << (int) args[2][2] << "\n";
+        args[2][2] = 'd';
+        args[3][3] = 't';
+        cout << "args is: " << (int) args[2][2] << "\n";
+        cout << "args is: " << (int) args[3][3] << "\n";
+
+        MetaBoard metaBoard;
+        MetaBoard::loadMetaBoard(args, &metaBoard);
+        metaBoard.printMe();
+
+        cout << (int) MiniBoard::PLAYER_ONE << "\n";
+
+    }
 
     run_tests();
 
