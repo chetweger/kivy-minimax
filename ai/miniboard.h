@@ -28,6 +28,8 @@ class MiniBoard {
 
         void setBoard(char input_board[]);
 
+        void setBoard(int input_board[]);
+
         void printMe();
 
         void placePiece(char piece, int position);

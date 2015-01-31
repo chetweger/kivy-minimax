@@ -25,6 +25,12 @@ void MiniBoard::setBoard(char input_board[]) {
     }
 }
 
+void MiniBoard::setBoard(int input_board[]) {
+    for (int i = 0; i <= 8; i++) {
+        board[i] = input_board[i];
+    }
+}
+
 void MiniBoard::printMe() {
     //cout << board;
     cout << "MiniBoard:\t";

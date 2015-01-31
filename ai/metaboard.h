@@ -1,6 +1,5 @@
 #include "miniboard.cpp"
 #include <vector>
-#include "constants.h"
 
 class MetaBoard {
     public:
@@ -23,6 +22,8 @@ class MetaBoard {
 
         int searchDepth = -1; // TODO: make sure clone works for ALL constants!!!!!!!
 
+        static float constants[6];
+
         float myUtility;
 
         void printMe();
@@ -43,6 +44,8 @@ class MetaBoard {
         vector<MetaBoard> generateChildrenAux();
 
         vector<MetaBoard> generateChildren();
+
+        static void setConstants(float constants[]);
 
         float getScore(char player);
         float getNumCenterPieces(char player);

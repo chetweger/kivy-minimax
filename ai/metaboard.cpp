@@ -119,6 +119,14 @@ vector<MetaBoard> MetaBoard::generateChildren() {
     return children;
 }
 
+float MetaBoard::constants[6] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+
+void MetaBoard::setConstants(float inputConstants[]) {
+    for (int i = 0; i < 6; i++) {
+        MetaBoard::constants[i] = inputConstants[i];
+    }
+}
+
 float MetaBoard::getScore(char player) {
     float score = 0;
     for (int i = 0; i < 9; i++) {
@@ -192,27 +200,27 @@ float MetaBoard::computeUtility() {
     for (int i = 0; i < 9; i++) {
         player_one_scored = this->boards[i].getScore(MiniBoard::PLAYER_ONE);
         player_two_scored = this->boards[i].getScore(MiniBoard::PLAYER_TWO);
-        score_player_1 += td_constants.c1 * player_one_scored;
-        score_player_2 += td_constants.c1 * player_two_scored;
+        score_player_1 += MetaBoard::constants[0] * player_one_scored;
+        score_player_2 += MetaBoard::constants[0] * player_two_scored;
         if ( ! (player_one_scored || player_two_scored)){
-            score_player_1 += td_constants.c2 * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_ONE);
-            score_player_1 += td_constants.c3 * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_ONE);
-            score_player_1 += td_constants.c4 * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_ONE);
-            score_player_1 += td_constants.c5 * this->boards[i].getPlayerOneBlocking();
-            score_player_1 += td_constants.c6 * this->boards[i].getPlayerOnePotential();
+            score_player_1 += MetaBoard::constants[1] * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_ONE);
+            score_player_1 += MetaBoard::constants[2] * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_ONE);
+            score_player_1 += MetaBoard::constants[3] * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_ONE);
+            score_player_1 += MetaBoard::constants[4] * this->boards[i].getPlayerOneBlocking();
+            score_player_1 += MetaBoard::constants[5] * this->boards[i].getPlayerOnePotential();
 
-            score_player_2 += td_constants.c2 * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_TWO);
-            score_player_2 += td_constants.c3 * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_TWO);
-            score_player_2 += td_constants.c4 * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_TWO);
-            score_player_2 += td_constants.c5 * this->boards[i].getPlayerTwoBlocking();
-            score_player_2 += td_constants.c6 * this->boards[i].getPlayerTwoPotential();
+            score_player_2 += MetaBoard::constants[1] * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_TWO);
+            score_player_2 += MetaBoard::constants[2] * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_TWO);
+            score_player_2 += MetaBoard::constants[3] * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_TWO);
+            score_player_2 += MetaBoard::constants[4] * this->boards[i].getPlayerTwoBlocking();
+            score_player_2 += MetaBoard::constants[5] * this->boards[i].getPlayerTwoPotential();
         }
     }
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {
-        this->myUtility = score_player_2 - score_player_1;
-    } else {
         this->myUtility = score_player_1 - score_player_2;
+    } else {
+        this->myUtility = score_player_2 - score_player_1;
     }
     return this->myUtility;
 }
@@ -223,6 +231,7 @@ MetaBoard MetaBoard::minimaxSearch(int searchDepth, bool getNextMove) {
     alpha.myUtility = -9005.;
     MetaBoard beta = *this;
     beta.myUtility = 9005.;
+    cout << "Inside minimaxSearch, searchDepth is: " << searchDepth << "\n";
     return this->maxSearch(searchDepth, alpha, beta, getNextMove);
 }
 
@@ -235,7 +244,7 @@ MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta,
     }
     MetaBoard highest;
     if (getNextMove) {
-        children[0].copyOver(&highest);;
+        children[0].copyOver(&highest);
     } else {
         children[0].minSearch(searchDepth - 1, alpha, beta).copyOver(&highest);
     }

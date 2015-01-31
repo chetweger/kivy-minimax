@@ -61,20 +61,25 @@ void run_tests() {
 
     utilityTest.computeUtility();
 
-    cout << "myUtility is: " << utilityTest.myUtility;
-    cout << "Expected utility is: " << (td_constants.c1 + 
-                                     td_constants.c2 + 
-                                     td_constants.c3 + 
-                                     td_constants.c4 - 
-                                     td_constants.c5 + 
-                                     td_constants.c6);
+    float consts[6] = {0.3f,0.3f,0.3f,0.3f,0.3f,0.3f};
+    MetaBoard::setConstants(consts);
 
-    assert(utilityTest.myUtility == (td_constants.c1 + 
-                                     td_constants.c2 + 
-                                     td_constants.c3 + 
-                                     td_constants.c4 - 
-                                     td_constants.c5 + 
-                                     td_constants.c6));
+    cout << "myUtility is: " << utilityTest.myUtility;
+    cout << "Expected utility is: " << (MetaBoard::constants[0] + 
+                                     MetaBoard::constants[1] + 
+                                     MetaBoard::constants[2] + 
+                                     MetaBoard::constants[3] - 
+                                     MetaBoard::constants[4] + 
+                                     MetaBoard::constants[5]);
+
+    /**
+    assert(utilityTest.myUtility == (MetaBoard::constants[0] + 
+                                     MetaBoard::constants[1] + 
+                                     MetaBoard::constants[2] + 
+                                     MetaBoard::constants[3] - 
+                                     MetaBoard::constants[4] + 
+                                     MetaBoard::constants[5]));
+                                     */
 }
 
 int main(int numArgs, char* args[]) {
@@ -101,6 +106,9 @@ int main(int numArgs, char* args[]) {
 
     }
 
+    float consts[6] = {3.3f,1.3f,0.6f,0.5f,0.2f,0.1f};
+    MetaBoard::setConstants(consts);
+
     run_tests();
 
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
@@ -108,7 +116,7 @@ int main(int numArgs, char* args[]) {
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
 
     int start = time(0);
-    MetaBoard bestChild = state.minimaxSearch(11, false);
+    MetaBoard bestChild = state.minimaxSearch(8, false);
     int end = time(0);
 
     bestChild.printMe();
