@@ -114,9 +114,12 @@ int main(int numArgs, char* args[]) {
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
 
     cout << "\nUtility: " << state.computeUtility() << "\n"; 
+    state.setConstants(consts);
+    state.next_player = 1;
+    state.player_max = 1;
 
     int start = time(0);
-    MetaBoard bestChild = state.minimaxSearch(8, false);
+    MetaBoard bestChild = state.minimaxSearch(9, true);
     int end = time(0);
 
     bestChild.printMe();
