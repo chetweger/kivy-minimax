@@ -83,6 +83,8 @@ class MetaTicTacToeGame(Widget):
 
     td_consts = {'c3': 0.767944, 'c2': 1.049451, 'c1': 3.074038, 'c6': 0.220823, 'c5': 0.181883, 'c4': 0.605861}
 
+    max_piece = -1
+
     def initialize(self, app):
         self.state = State()
         self.ai_first_button.bind(on_press = self.ai_plays_first)
@@ -110,6 +112,7 @@ class MetaTicTacToeGame(Widget):
         board = self.state.boards
         piece = list(self.state.next_piece)
         playable = True
+        print 'will_buttons', piece
         if is_win(board[piece[0]][piece[1]]) or is_full(board[piece[0]][piece[1]]):
             playable = False
         if (not is_win(board[meta_y][meta_x])) and (not is_full(board[meta_y][meta_x])):
@@ -124,8 +127,8 @@ class MetaTicTacToeGame(Widget):
             # update human score
             self.state.score[str(self.state.min_piece)] += 1
         self.game_info.text = (self.score_message %
-                               (self.state.score[str(self.state.max_piece)],
-                                self.state.score[str(self.state.min_piece)]))
+                               (self.state.score[str(self.max_piece)],
+                                self.state.score[str(self.min_piece)]))
 
     def state_to_grid(self):
         self.meta_board.clear_widgets()
@@ -159,7 +162,6 @@ class MetaTicTacToeGame(Widget):
 
                 self.meta_board.add_widget(mini_board)
 
-
     def do_nothing(self, button):
         '''A disabled button callback used for when game is over.
         '''
@@ -185,13 +187,17 @@ class MetaTicTacToeGame(Widget):
         return winning_player
 
     def human_first(self):
-        self.state.max_piece = '2'
+        self.max_piece = '4'
+        self.min_piece = '1'
+        self.state.max_piece = '4'
         self.state.min_piece = '1'
         self.state.next_piece[2] = 2
 
     def ai_first(self):
+        self.max_piece = '1'
+        self.min_piece = '4'
         self.state.max_piece = '1'
-        self.state.min_piece = '2'
+        self.state.min_piece = '4'
         self.state.next_piece[2] = 1
 
     def set_next_state(self, button):
@@ -200,7 +206,7 @@ class MetaTicTacToeGame(Widget):
         self.state.next_piece[2] = int(self.state.max_piece)
 
     def human_plays(self, button):
-        if self.state.max_piece == -1:
+        if self.max_piece == -1:
             # we know that the human is playing first!
             # therefore the AI will be player 2 (try to maximize utility of 2)
             self.toolbar.remove_widget(self.ai_first_button) # once ai plays first, AI can't play first again.
@@ -215,7 +221,7 @@ class MetaTicTacToeGame(Widget):
             self.state_to_grid()
             return
 
-        expected_utility, self.state = minimax_search(self.state, self.td_consts)
+        self.state = minimax_search(self.state, self.td_consts)
         self.update_score(button)
         self.check_win() # check if the AI just won
         self.state_to_grid()
@@ -224,7 +230,7 @@ class MetaTicTacToeGame(Widget):
     def ai_plays_first(self, button):
         self.toolbar.remove_widget(button) # once ai plays first, AI can't play first again.
         self.ai_first()
-        expected_utility, self.state = minimax_search(self.state, self.td_consts)
+        self.state = minimax_search(self.state, self.td_consts)
         self.state_to_grid()
 
 class PlayMetaTTTApp(App):

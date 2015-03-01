@@ -1,3 +1,6 @@
+import copy
+from meta_ttt_ai import minimaxSearch
+
 README = '''Welcome to meta_tic-tac-toe by Chet Weger
 
 This program relies on the min-max algorithm with alpha beta
@@ -427,7 +430,19 @@ def max_search(state, depth, depth_limit, a, b, constants):
             nextS = gen.next()
         return value
 
-def minimax_search(state, constants, depth_limit=3):
+def minimax_search(state, constants, depth_limit=4):
+    intermediate = state.toLists(depth_limit=depth_limit)
+    intermediate[10].append(1)
+    nextStateIntermediate = minimaxSearch(*intermediate)
+    intermediate[10][4] = 0
+    nextStateFuture = minimaxSearch(*intermediate)
+    print 'nextStateIntermediate is ', nextStateIntermediate
+    next_state = State().listsToState(nextStateIntermediate)
+    next_state_future = State().listsToState(nextStateFuture)
+    next_state_future.printInfo()
+    return next_state
+
+def minimax_search_old(state, constants, depth_limit=9):
     '''The minimax alpha-beta prunning algorithm as described by Norvig p. 170.
     ab is essentially a wrapper around max_search.
     '''
@@ -487,9 +502,9 @@ class State:
                                                             # index 0 -> vertical component (top->down)
                                                             # index 1 -> horizontal component (left->right)
                                                             # index 2 -> integer value of next piece to be played (1 or 2)
-        self.score = {"1": 0, "2": 0} # the score of player 1 and player 2
-        self.min_piece = -1
-        self.max_piece = 1
+        self.score = {"1": 0, "4": 0} # the score of player 1 and player 2
+        self.min_piece = 1
+        self.max_piece = -1
 
     def listsToState(self, lists):
         for boardY, rowBoards in enumerate(self.boards):
@@ -502,16 +517,15 @@ class State:
         self.next_piece[0] = lists[10][0] / 3
         self.next_piece[1] = lists[10][0] % 3
         self.next_piece[2] = lists[10][1]
+        self.max_piece = lists[10][2]
+        return self
 
-
-
-    def toLists(self, constants = {'c3': 0.767944, 'c2': 1.049451, 'c1': 3.074038, 'c6': 0.220823, 'c5': 0.281883, 'c4': 0.605861}, searchDepth = 10):
+    def toLists(self, constants = {'c3': 7679, 'c2': 10494, 'c1': 32740, 'c6': 2208, 'c5': 2818,  'c4': 6058}, depth_limit = 8):
         stateInfo = []
         for rowBoards in self.boards:
             for boardDict in rowBoards:
                 board = []
                 for row in boardDict:
-                    print 'hi1'
                     for piece in row:
                         board.append(piece['cell'])
                 stateInfo.append(board)
@@ -531,8 +545,8 @@ class State:
             [
                 self.next_piece[0] * 3 + self.next_piece[1],
                 self.next_piece[2],
-                self.max_piece,
-                searchDepth
+                int(self.max_piece),
+                depth_limit
             ]
         )
         return stateInfo
@@ -549,9 +563,9 @@ class State:
         '''
         if not self.is_over():
             winning_player = 0 # game not over
-        elif self.score['1'] > self.score['2']:
+        elif self.score['1'] > self.score['4']:
             winning_player = 1 # piece 1
-        elif self.score['1'] < self.score['2']:
+        elif self.score['1'] < self.score['4']:
             winning_player = 2 # piece 2
         else:
             winning_player = -1 # a tie
@@ -630,7 +644,7 @@ class State:
         self.copyBoards(other)
         self.next_piece = other.next_piece[:3]
         self.score['1'] = other.score['1']
-        self.score['2'] = other.score['2']
+        self.score['4'] = other.score['4']
         self.max_piece = other.max_piece
         self.min_piece = other.min_piece
 
@@ -788,7 +802,7 @@ def user_turn(state, TD_CONSTS):
                 print messageTryAgain
     print "Your move was:"
     state.printInfo()
-    print "Scores: Player 1: ", state.score['1'], " Player 2: ", state.score['2']
+    print "Scores: Player 1: ", state.score['1'], " Player 2: ", state.score['4']
     return computer_turn(state, TD_CONSTS)
 
 
@@ -804,7 +818,7 @@ def computer_turn(state, TD_CONSTS):
     print "Expected utility is: ", expectedUtility
 
     state = copy.deepcopy(nextState)
-    print "Scores: Player 1: ", state.score['1'], " Player 2: ", state.score['2']
+    print "Scores: Player 1: ", state.score['1'], " Player 2: ", state.score['4']
     return user_turn(state, TD_CONSTS)
 
 #####################################################################
@@ -841,19 +855,19 @@ def trainAI(td_consts=
                 break
             state = naive_AI(state, STATIC_CONSTS, depth_limit)
         history_index = len(training_history) - 1
-        if state.score['1'] > state.score['2']:
+        if state.score['1'] > state.score['4']:
             victories.append({'index': history_index,
                                                 'message':
-'Learning AI won\n' + str(state.score['1']) + ' to ' + str(state.score['2']) + '.'
+'Learning AI won\n' + str(state.score['1']) + ' to ' + str(state.score['4']) + '.'
                                              })
         else:
             victories.append({'index': history_index,
                                                 'message':
-'Static AI won\n' + str(state.score['2']) + ' to ' + str(state.score['1']) + '.'
+'Static AI won\n' + str(state.score['4']) + ' to ' + str(state.score['1']) + '.'
                                              })
         state.printInfo()
         print "Learning AI's constants were ", TD_CONSTS
-        print "Results were learning: ", state.score['1'], " static ", state.score['2']
+        print "Results were learning: ", state.score['1'], " static ", state.score['4']
     print "Done training."
     plot_results(training_history, victories)
     return training_history, victories

@@ -45,7 +45,7 @@ class MetaBoard {
 
         vector<MetaBoard> generateChildren();
 
-        static void setConstants(float constants[]);
+        static void setConstants(int constants[]);
 
         float getScore(char player);
         float getNumCenterPieces(char player);

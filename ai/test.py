@@ -1,5 +1,5 @@
 from learning import *
-from helloworld import *
+from ai import *
 import time
 
 def getTestStateLists():

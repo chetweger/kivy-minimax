@@ -61,7 +61,7 @@ void run_tests() {
 
     utilityTest.computeUtility();
 
-    float consts[6] = {0.3f,0.3f,0.3f,0.3f,0.3f,0.3f};
+    int consts[6] = {30740, 10494, 7679, 6058, 2818, 2208};
     MetaBoard::setConstants(consts);
 
     cout << "myUtility is: " << utilityTest.myUtility;
@@ -83,10 +83,6 @@ void run_tests() {
 }
 
 int main(int numArgs, char* args[]) {
-    cout << "Num args:\n";
-
-    cout << numArgs;
-
     if (numArgs > 1) {
 
         cout << "\n";
@@ -106,7 +102,7 @@ int main(int numArgs, char* args[]) {
 
     }
 
-    float consts[6] = {3.3f,1.3f,0.6f,0.5f,0.2f,0.1f};
+    int consts[6] = {30740, 10494, 7679, 6058, 2818, 2208};
     MetaBoard::setConstants(consts);
 
     run_tests();
@@ -119,7 +115,7 @@ int main(int numArgs, char* args[]) {
     state.player_max = 1;
 
     int start = time(0);
-    MetaBoard bestChild = state.minimaxSearch(9, true);
+    MetaBoard bestChild = state.minimaxSearch(8, true);
     int end = time(0);
 
     bestChild.printMe();

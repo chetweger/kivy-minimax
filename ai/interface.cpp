@@ -4,24 +4,15 @@
 // 16 seconds for depth of 39
 // with optimization of -O0
 
-static PyObject* helloworld(PyObject* self)
-{
-    MiniBoard mini(1);
-    mini.printMe();
-    MetaBoard metaBoard;
-    metaBoard.printMe();
-    return Py_BuildValue("s", "Hello, Python extensions!! in interfaces.cpp");
-}
-
 static PyObject* minimaxSearch(PyObject* self, PyObject *metaBoardStateArgs)
 {
     MetaBoard metaBoard;
     int board[9][9];
-    float constants[6];
+    int constants[6];
     int getNextMove;
 
     if (!PyArg_ParseTuple(metaBoardStateArgs,
-        "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(ffffff)(iiiii)",
+        "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiii)(iiiii)",
         &board[0][0], &board[0][1], &board[0][2], &board[0][3], &board[0][4], &board[0][5], &board[0][6], &board[0][7], &board[0][8],
         &board[1][0], &board[1][1], &board[1][2], &board[1][3], &board[1][4], &board[1][5], &board[1][6], &board[1][7], &board[1][8],
         &board[2][0], &board[2][1], &board[2][2], &board[2][3], &board[2][4], &board[2][5], &board[2][6], &board[2][7], &board[2][8],
@@ -41,11 +32,12 @@ static PyObject* minimaxSearch(PyObject* self, PyObject *metaBoardStateArgs)
         metaBoard.boards[i].setBoard(board[i]);
     }
     metaBoard.setConstants(constants);
-    metaBoard.printMe();
 
     MetaBoard next = metaBoard.minimaxSearch(metaBoard.searchDepth, (bool) getNextMove);
 
-    return Py_BuildValue( "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(dddddd)(iiiii)",
+    cout << "next mini board is " << next.next_mini_board << "\n";
+
+    return Py_BuildValue( "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiii)(iiiii)",
             next.boards[0].board[0], next.boards[0].board[1], next.boards[0].board[2], next.boards[0].board[3], next.boards[0].board[4], next.boards[0].board[5], next.boards[0].board[6], next.boards[0].board[7], next.boards[0].board[8], 
             next.boards[1].board[0], next.boards[1].board[1], next.boards[1].board[2], next.boards[1].board[3], next.boards[1].board[4], next.boards[1].board[5], next.boards[1].board[6], next.boards[1].board[7], next.boards[1].board[8], 
             next.boards[2].board[0], next.boards[2].board[1], next.boards[2].board[2], next.boards[2].board[3], next.boards[2].board[4], next.boards[2].board[5], next.boards[2].board[6], next.boards[2].board[7], next.boards[2].board[8], 
@@ -60,22 +52,18 @@ static PyObject* minimaxSearch(PyObject* self, PyObject *metaBoardStateArgs)
         );
 }
 
-static char helloworld_docs[] = "helloworld( ): Any message you want to put here!!\n";
+static char minimaxSearch_docs[] = "minimaxSearch docs ...";
 
-static char helloworld_2[] = "2";
-
-static PyMethodDef helloworld_funcs[] = {
-    {"helloworld", (PyCFunction)helloworld,
-     METH_NOARGS, helloworld_docs},
+static PyMethodDef ai_funcs[] = {
     {"minimaxSearch", (PyCFunction)minimaxSearch,
-     METH_VARARGS, helloworld_2},
+     METH_VARARGS, minimaxSearch_docs},
     {NULL}
 };
 
 extern "C" {
-    void inithelloworld(void)
+    void initmeta_ttt_ai(void)
     {
-        Py_InitModule3("helloworld", helloworld_funcs,
+        Py_InitModule3("meta_ttt_ai", ai_funcs,
                        "Extension module example!");
     }
 }

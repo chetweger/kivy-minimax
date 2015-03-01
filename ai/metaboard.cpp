@@ -11,6 +11,7 @@ void MetaBoard::printMe() {
         this->boards[i].printMe();
     }
     cout << "Utility is: " << this->myUtility << "\n";
+    cout << "constants are: " << this->constants[0] << "\t" << this->constants[1] << "\t"  << this->constants[2] << "\t"  << this->constants[3] << "\t"  << this->constants[4] << "\t"  << this->constants[5] << "\n";
 }
 
 MetaBoard MetaBoard::clone() {
@@ -121,7 +122,7 @@ vector<MetaBoard> MetaBoard::generateChildren() {
 
 float MetaBoard::constants[6] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 
-void MetaBoard::setConstants(float inputConstants[]) {
+void MetaBoard::setConstants(int inputConstants[]) {
     for (int i = 0; i < 6; i++) {
         MetaBoard::constants[i] = inputConstants[i];
     }
@@ -243,25 +244,31 @@ MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta,
         return *this;
     }
     MetaBoard highest;
-    if (getNextMove) {
-        children[0].copyOver(&highest);
-    } else {
-        children[0].minSearch(searchDepth - 1, alpha, beta).copyOver(&highest);
-    }
+    children[0].minSearch(searchDepth - 1, alpha, beta).copyOver(&highest);
+    int highestChildIndex = 0;
     for (int i = 1; i < children.size(); i++) {
         MetaBoard possibleHighest = children[i].minSearch(searchDepth - 1, highest, beta);
+        if (getNextMove) {
+            cout << "possibleHighest: " << i << "\n";
+            //possibleHighest.printMe();
+            cout << "alpha: " << alpha.myUtility << "\n";
+            cout << "beta: " << beta.myUtility << "\n";
+            cout << "possibleHighest: " << possibleHighest.myUtility << "\n";
+            cout << "beta: " <<  (possibleHighest > highest) << "\n";
+        }
         if (possibleHighest > highest) {
-            if (getNextMove) {
-                children[i].copyOver(&highest);
-            } else {
-                possibleHighest.copyOver(&highest);
-            }
+            highestChildIndex = i;
+            possibleHighest.copyOver(&highest);
         }
         if (possibleHighest >= beta) {
             break;
         }
     }
-    return highest;
+    if (getNextMove) {
+        return children[highestChildIndex];
+    } else {
+        return highest;
+    }
 }
 
 MetaBoard MetaBoard::minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta) {
@@ -271,7 +278,8 @@ MetaBoard MetaBoard::minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta)
     if (children.size() <= 0 || searchDepth <= 0) {
         return *this;
     }
-    MetaBoard lowest = children[0].maxSearch(searchDepth - 1, alpha, beta, false);
+    MetaBoard lowest;
+    children[0].maxSearch(searchDepth - 1, alpha, beta, false).copyOver(&lowest);
     for (int i = 1; i < children.size(); i++) {
         MetaBoard possibleLowest = children[i].maxSearch(searchDepth - 1, alpha, lowest, false);
         if (possibleLowest < lowest) {
