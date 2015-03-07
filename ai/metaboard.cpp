@@ -243,11 +243,15 @@ MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta,
     if (children.size() <= 0 || searchDepth <= 0) {
         return *this;
     }
-    MetaBoard highest;
-    children[0].minSearch(searchDepth - 1, alpha, beta).copyOver(&highest);
+    int depthDelta = 1;
+    if (children.size() > 27) {
+        depthDelta = 2;
+    }
+    MetaBoard highest = children[0].minSearch(searchDepth - depthDelta, alpha, beta);
+    MetaBoard possibleHighest;
     int highestChildIndex = 0;
     for (int i = 1; i < children.size(); i++) {
-        MetaBoard possibleHighest = children[i].minSearch(searchDepth - 1, highest, beta);
+        children[i].minSearch(searchDepth - depthDelta, highest, beta).copyOver(&possibleHighest);
         if (getNextMove) {
             cout << "possibleHighest: " << i << "\n";
             //possibleHighest.printMe();
@@ -261,6 +265,7 @@ MetaBoard MetaBoard::maxSearch(int searchDepth, MetaBoard alpha, MetaBoard beta,
             possibleHighest.copyOver(&highest);
         }
         if (possibleHighest >= beta) {
+            highest.myUtility = 90000005;
             break;
         }
     }
@@ -278,14 +283,19 @@ MetaBoard MetaBoard::minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta)
     if (children.size() <= 0 || searchDepth <= 0) {
         return *this;
     }
-    MetaBoard lowest;
-    children[0].maxSearch(searchDepth - 1, alpha, beta, false).copyOver(&lowest);
+    int depthDelta = 1;
+    if (children.size() > 27) {
+        depthDelta = 2;
+    }
+    MetaBoard lowest = children[0].maxSearch(searchDepth - depthDelta, alpha, beta, false);
+    MetaBoard possibleLowest;
     for (int i = 1; i < children.size(); i++) {
-        MetaBoard possibleLowest = children[i].maxSearch(searchDepth - 1, alpha, lowest, false);
+        children[i].maxSearch(searchDepth - depthDelta, alpha, lowest, false).copyOver(&possibleLowest);
         if (possibleLowest < lowest) {
             possibleLowest.copyOver(&lowest); 
         }
         if (possibleLowest <= alpha) {
+            lowest.myUtility = -90000005;
             break;
         }
     }
