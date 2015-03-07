@@ -24,7 +24,9 @@ class MetaBoard {
 
         static float constants[6];
 
-        float myUtility;
+        int myUtility;
+
+        int killerHeuristics;
 
         void printMe();
 
@@ -57,7 +59,7 @@ class MetaBoard {
         float getPlayerTwoBlocking();
         float getPlayerTwoPotential();
 
-        float computeUtility();
+        float computeUtilityAndKillerHeuristics(int boardPlacement);
 
         MetaBoard minimaxSearch(int searchDepth, bool getNextMove);
         MetaBoard minSearch(int searchDepth, MetaBoard alpha, MetaBoard beta);

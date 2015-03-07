@@ -25,6 +25,7 @@ MetaBoard MetaBoard::clone() {
     cloned.player_max = this->player_max;
     cloned.searchDepth = this->searchDepth;
     cloned.myUtility = this->myUtility;
+    cloned.killerHeuristics = this->killerHeuristics;
     return cloned;
 }
 
@@ -50,6 +51,7 @@ MetaBoard MetaBoard::copyOver(MetaBoard * cloned) {
     cloned->player_max = this->player_max;
     cloned->searchDepth = this->searchDepth;
     cloned->myUtility = this->myUtility;
+    cloned->killerHeuristics = this->killerHeuristics;
     return * cloned;
 }
 
@@ -88,13 +90,21 @@ vector<MetaBoard> MetaBoard::generateChildrenAux() {
                 child.boards[next_mini_board].board[i] = this->next_player;
                 child.next_mini_board = i;
                 child.next_player = childs_next_player;
-                child.computeUtility();
+                child.computeUtilityAndKillerHeuristics(next_mini_board);
                 children.push_back(child);
             }
         }
     }
     return children;
 }
+
+struct greater_than_key
+{
+    inline bool operator() (const MetaBoard& struct1, const MetaBoard& struct2)
+    {
+        return (struct1.killerHeuristics < struct2.killerHeuristics);
+    }
+};
 
 vector<MetaBoard> MetaBoard::generateChildren() {
     /*
@@ -117,6 +127,7 @@ vector<MetaBoard> MetaBoard::generateChildren() {
         }
     }
     sort(children.begin(), children.end(), greater<MetaBoard>());
+    sort(children.begin(), children.end(), greater_than_key());
     return children;
 }
 
@@ -192,18 +203,19 @@ float MetaBoard::getPlayerTwoPotential() {
     return positions;
 }
 
-float MetaBoard::computeUtility() {
+float MetaBoard::computeUtilityAndKillerHeuristics(int boardPlacement) {
     float score_player_1 = 0.0;
     float score_player_2 = 0.0;
 
     int player_one_scored = -1;
     int player_two_scored = -1;
+    this->killerHeuristics = 0;
     for (int i = 0; i < 9; i++) {
         player_one_scored = this->boards[i].getScore(MiniBoard::PLAYER_ONE);
         player_two_scored = this->boards[i].getScore(MiniBoard::PLAYER_TWO);
         score_player_1 += MetaBoard::constants[0] * player_one_scored;
         score_player_2 += MetaBoard::constants[0] * player_two_scored;
-        if ( ! (player_one_scored || player_two_scored)){
+        if (!(player_one_scored || player_two_scored)) {
             score_player_1 += MetaBoard::constants[1] * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_ONE);
             score_player_1 += MetaBoard::constants[2] * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_ONE);
             score_player_1 += MetaBoard::constants[3] * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_ONE);
@@ -215,7 +227,25 @@ float MetaBoard::computeUtility() {
             score_player_2 += MetaBoard::constants[3] * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_TWO);
             score_player_2 += MetaBoard::constants[4] * this->boards[i].getPlayerTwoBlocking();
             score_player_2 += MetaBoard::constants[5] * this->boards[i].getPlayerTwoPotential();
+
+            if (i == boardPlacement) {
+                // compute "blocking" killer heuristic
+                if (this->boards[i].getPlayerOneBlocking() || this->boards[i].getPlayerTwoBlocking()) {
+                    this->killerHeuristics += 2;
+                }
+
+                // compute "potential" killer heuristic
+                if (this->boards[i].getPlayerOneBlocking() || this->boards[i].getPlayerTwoBlocking()) {
+                    this->killerHeuristics += 1;
+                }
+            }
         }
+        
+        // compute "board win" killer heuristic
+        if (i == boardPlacement && (player_one_scored || player_two_scored)) {
+            this->killerHeuristics += 3;
+        }
+
     }
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {

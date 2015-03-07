@@ -430,7 +430,7 @@ def max_search(state, depth, depth_limit, a, b, constants):
             nextS = gen.next()
         return value
 
-def minimax_search(state, constants, depth_limit=8):
+def minimax_search(state, constants, depth_limit=4):
     intermediate = state.toLists(depth_limit=depth_limit)
     intermediate[10].append(1)
     nextStateIntermediate = minimaxSearch(*intermediate)
