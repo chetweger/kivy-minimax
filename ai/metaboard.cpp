@@ -229,9 +229,9 @@ float MetaBoard::computeUtility() {
 MetaBoard MetaBoard::minimaxSearch(int searchDepth, bool getNextMove) {
     this->searchDepth = searchDepth;
     MetaBoard alpha = *this;
-    alpha.myUtility = -9005.;
+    alpha.myUtility = -90000005;
     MetaBoard beta = *this;
-    beta.myUtility = 9005.;
+    beta.myUtility = 90000005;
     cout << "Inside minimaxSearch, searchDepth is: " << searchDepth << "\n";
     return this->maxSearch(searchDepth, alpha, beta, getNextMove);
 }
