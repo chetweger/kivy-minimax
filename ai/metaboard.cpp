@@ -102,7 +102,7 @@ struct greater_than_key
 {
     inline bool operator() (const MetaBoard& struct1, const MetaBoard& struct2)
     {
-        return (struct1.killerHeuristics < struct2.killerHeuristics);
+        return (struct1.killerHeuristics > struct2.killerHeuristics);
     }
 };
 

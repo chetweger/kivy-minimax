@@ -59,7 +59,7 @@ void run_tests() {
     utilityTest.player_max = 1;
     utilityTest.next_player = 1;
 
-    utilityTest.computeUtility();
+    utilityTest.computeUtilityAndKillerHeuristics(4);
 
     int consts[6] = {30740, 10494, 7679, 6058, 2818, 2208};
     MetaBoard::setConstants(consts);
@@ -80,6 +80,34 @@ void run_tests() {
                                      MetaBoard::constants[4] + 
                                      MetaBoard::constants[5]));
                                      */
+
+    MetaBoard killerHeuristicTest;
+    killerHeuristicTest.boards[4].board[0] = 4;
+    killerHeuristicTest.boards[4].board[2] = 4;
+    killerHeuristicTest.next_player = 1;
+    killerHeuristicTest.next_mini_board = 4;
+    killerHeuristicTest.player_max = 1;
+    vector<MetaBoard> children;
+
+    children = killerHeuristicTest.generateChildren();
+
+    cout << "First child is: " << (int) children[0].boards[4].board[1] << "\n";
+    assert(children[0].boards[4].board[1] == 1);
+    assert(children[1].boards[4].board[4] == 1);
+
+    MetaBoard killerHeuristicTest2;
+    killerHeuristicTest2.boards[4].board[0] = 1;
+    killerHeuristicTest2.boards[4].board[2] = 1;
+    killerHeuristicTest2.next_player = 1;
+    killerHeuristicTest2.next_mini_board = 4;
+    killerHeuristicTest2.player_max = 1;
+    vector<MetaBoard> children2;
+
+    children2 = killerHeuristicTest2.generateChildren();
+
+    cout << "First child is: " << (int) children2[0].boards[4].board[1] << "\n";
+    assert(children2[0].boards[4].board[1] == 1);
+    assert(children2[1].boards[4].board[4] == 1);
 }
 
 int main(int numArgs, char* args[]) {
@@ -99,7 +127,6 @@ int main(int numArgs, char* args[]) {
         metaBoard.printMe();
 
         cout << (int) MiniBoard::PLAYER_ONE << "\n";
-
     }
 
     int consts[6] = {30740, 10494, 7679, 6058, 2818, 2208};
@@ -109,7 +136,7 @@ int main(int numArgs, char* args[]) {
 
     MetaBoard state; // declare state without parenthesis to avoid confustion with function call
 
-    cout << "\nUtility: " << state.computeUtility() << "\n"; 
+    cout << "\nUtility: " << state.computeUtilityAndKillerHeuristics(4) << "\n"; 
     state.setConstants(consts);
     state.next_player = 1;
     state.player_max = 1;
