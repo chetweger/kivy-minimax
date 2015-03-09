@@ -490,6 +490,13 @@ def find_last_move(prev_state, current_state):
                                 'meta_x': j,
                                 'meta_y': i}
 
+def getTriplePiece(list_dict):
+    '''Gets piece if it's 3 in a row.
+    '''
+    cells = map((lambda x: x['cell']), list_dict)
+    list_and = reduce( (lambda x,y: x & y), cells) #should be NON zero if 1's matching exists
+    return list_and
+
 class State:
     # state represents the board, next piece to be played, and other relevant info
     def __init__(self):
@@ -506,6 +513,26 @@ class State:
         self.min_piece = 1
         self.max_piece = -1
 
+    def calculateScore(self):
+        self.score = {"1": 0, "4": 0} # reset
+        for rowBoard in self.boards:
+            for board in rowBoard:
+                for row in board:
+                    if getTriplePiece(row):
+                        self.score[str(getTriplePiece(row))] += 1
+                board_Transpose = zip(*board)
+                for column in board_Transpose:
+                    if getTriplePiece(column):
+                        self.score[str(getTriplePiece(column))] += 1
+                zip(*board)
+                length = len(board)
+                diagonal1 = [board[i][i] for i in range(length)] #returns y=-x diagonal (the trace)
+                diagonal2 = [board[i][length-i-1] for i in range(length)] #returns y=x diagonal
+                if getTriplePiece(diagonal1):
+                    self.score[str(getTriplePiece(diagonal1))] += 1
+                if getTriplePiece(diagonal2):
+                    self.score[str(getTriplePiece(diagonal2))] += 1
+
     def listsToState(self, lists):
         for boardY, rowBoards in enumerate(self.boards):
             for boardX, boardDict in enumerate(rowBoards):
@@ -518,6 +545,7 @@ class State:
         self.next_piece[1] = lists[10][0] % 3
         self.next_piece[2] = lists[10][1]
         self.max_piece = lists[10][2]
+        self.calculateScore()
         return self
 
     def toLists(self, constants = {'c3': 7679, 'c2': 10494, 'c1': 32740, 'c6': 2208, 'c5': 2818,  'c4': 6058}, depth_limit = 8):
@@ -561,12 +589,13 @@ class State:
         '''Check if there is a winning player.
         and return corresponing integer if true
         '''
+        self.calculateScore()
         if not self.is_over():
             winning_player = 0 # game not over
         elif self.score['1'] > self.score['4']:
             winning_player = 1 # piece 1
         elif self.score['1'] < self.score['4']:
-            winning_player = 2 # piece 2
+            winning_player = 4 # piece 2
         else:
             winning_player = -1 # a tie
         return winning_player

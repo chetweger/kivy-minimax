@@ -123,9 +123,6 @@ class MetaTicTacToeGame(Widget):
         return False
 
     def update_score(self, button):
-        if is_win(self.state.boards[button.meta_y][button.meta_x]):
-            # update human score
-            self.state.score[str(self.state.min_piece)] += 1
         self.game_info.text = (self.score_message %
                                (self.state.score[str(self.max_piece)],
                                 self.state.score[str(self.min_piece)]))
@@ -169,14 +166,12 @@ class MetaTicTacToeGame(Widget):
 
     def check_win(self):
         winning_player = self.state.check_winner() # returns 1 or 2 if either of these players won or returns 0 if
-                                                # neither player won in the case of a tie
+                                                   # neither player won in the case of a tie
 
         if winning_player:
             self.human_plays = self.do_nothing # deactivate button callback.
 
-            if winning_player == int(self.state.min_piece):
-                # if this case is true, the human won!??!
-                # Wow, this should never happen! let the player know they discovered a bug in my code.
+            if winning_player == int(self.min_piece):
                 winning_text = '\n\nCongradualations, you won!'
             elif winning_player == int(self.state.max_piece):
                 # ai won
@@ -215,7 +210,6 @@ class MetaTicTacToeGame(Widget):
         self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.min_piece)
         self.set_next_state(button)
 
-        #self.update_score(button)
         if self.check_win(): # check if the human just won
             self.update_score(button)
             self.state_to_grid()
