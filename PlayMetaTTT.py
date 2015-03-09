@@ -212,7 +212,7 @@ class MetaTicTacToeGame(Widget):
             self.toolbar.remove_widget(self.ai_first_button) # once ai plays first, AI can't play first again.
             self.human_first()
 
-        self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.state.min_piece)
+        self.state.boards[button.meta_y][button.meta_x][button.mini_y][button.mini_x]['cell'] = int(self.min_piece)
         self.set_next_state(button)
 
         #self.update_score(button)
