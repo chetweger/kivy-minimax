@@ -61,7 +61,7 @@ void run_tests() {
 
     utilityTest.computeUtilityAndKillerHeuristics(4);
 
-    int consts[6] = {30740, 10494, 7679, 6058, 2818, 2208};
+    float consts[6] = {3.0740f, 1.0494f, 0.7679f, 0.6058f, 0.2818f, 0.2208f};
     MetaBoard::setConstants(consts);
 
     cout << "myUtility is: " << utilityTest.myUtility;
@@ -106,6 +106,9 @@ void run_tests() {
     children2 = killerHeuristicTest2.generateChildren();
 
     cout << "First child is: " << (int) children2[0].boards[4].board[1] << "\n";
+    cout << "First child is: " << (int) children2[1].boards[4].board[1] << "\n";
+    children2[0].printMe();
+    children2[1].printMe();
     assert(children2[0].boards[4].board[1] == 1);
     assert(children2[1].boards[4].board[4] == 1);
 }
@@ -129,7 +132,7 @@ int main(int numArgs, char* args[]) {
         cout << (int) MiniBoard::PLAYER_ONE << "\n";
     }
 
-    int consts[6] = {30740, 10494, 7679, 6058, 2818, 2208};
+    float consts[6] = {3.0740f, .10494f, .7679f, .6058f, .2818f, .2208f};
     MetaBoard::setConstants(consts);
 
     run_tests();

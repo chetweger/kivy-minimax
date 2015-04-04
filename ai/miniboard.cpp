@@ -71,29 +71,29 @@ bool MiniBoard::isOver() {
     return this->isFull() || this->isWin();
 }
 
-int MiniBoard::getScore(char player) {
+float MiniBoard::getScore(char player) {
     return (int) (this->isWin() == player);
 }
 
-int MiniBoard::getNumCenterPieces(char player) {
+float MiniBoard::getNumCenterPieces(char player) {
     return (int) ((bool) (board[4] & player));
 }
 
-int MiniBoard::getNumCornerPieces(char player) {
+float MiniBoard::getNumCornerPieces(char player) {
     return (int) ((bool) (board[0] & player)) +
            (int) ((bool) (board[2] & player)) +
            (int) ((bool) (board[6] & player)) +
            (int) ((bool) (board[8] & player));
 }
 
-int MiniBoard::getNumSidePieces(char player) {
+float MiniBoard::getNumSidePieces(char player) {
     return (int) ((bool) (board[1] & player)) +
            (int) ((bool) (board[3] & player)) +
            (int) ((bool) (board[5] & player)) +
            (int) ((bool) (board[7] & player));
 }
 
-int MiniBoard::getPlayerOneBlocking() {
+float MiniBoard::getPlayerOneBlocking() {
     return ((board[0] + board[1] + board[2]) == MiniBoard::PLAYER_ONE_BLOCKING) ||
            ((board[3] + board[4] + board[5]) == MiniBoard::PLAYER_ONE_BLOCKING) ||
            ((board[6] + board[7] + board[8]) == MiniBoard::PLAYER_ONE_BLOCKING) ||
@@ -104,7 +104,7 @@ int MiniBoard::getPlayerOneBlocking() {
            ((board[2] + board[4] + board[6]) == MiniBoard::PLAYER_ONE_BLOCKING);
 }
 
-int MiniBoard::getPlayerTwoBlocking() {
+float MiniBoard::getPlayerTwoBlocking() {
     return ((board[0] + board[1] + board[2]) == MiniBoard::PLAYER_TWO_BLOCKING) ||
            ((board[3] + board[4] + board[5]) == MiniBoard::PLAYER_TWO_BLOCKING) ||
            ((board[6] + board[7] + board[8]) == MiniBoard::PLAYER_TWO_BLOCKING) ||
@@ -115,7 +115,7 @@ int MiniBoard::getPlayerTwoBlocking() {
            ((board[2] + board[4] + board[6]) == MiniBoard::PLAYER_TWO_BLOCKING);
 }
 
-int MiniBoard::getPlayerOnePotential() {
+float MiniBoard::getPlayerOnePotential() {
     return ((board[0] + board[1] + board[2]) == MiniBoard::PLAYER_ONE_POTENTIAL) ||
            ((board[3] + board[4] + board[5]) == MiniBoard::PLAYER_ONE_POTENTIAL) ||
            ((board[6] + board[7] + board[8]) == MiniBoard::PLAYER_ONE_POTENTIAL) ||
@@ -126,7 +126,7 @@ int MiniBoard::getPlayerOnePotential() {
            ((board[2] + board[4] + board[6]) == MiniBoard::PLAYER_ONE_POTENTIAL);
 }
 
-int MiniBoard::getPlayerTwoPotential() {
+float MiniBoard::getPlayerTwoPotential() {
     return ((board[0] + board[1] + board[2]) == MiniBoard::PLAYER_TWO_POTENTIAL) ||
            ((board[3] + board[4] + board[5]) == MiniBoard::PLAYER_TWO_POTENTIAL) ||
            ((board[6] + board[7] + board[8]) == MiniBoard::PLAYER_TWO_POTENTIAL) ||

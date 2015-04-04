@@ -40,21 +40,21 @@ class MiniBoard {
 
         bool isOver(); // is full or win
 
-        int getScore(char player);
+        float getScore(char player);
 
-        int getNumCenterPieces(char player);
+        float getNumCenterPieces(char player);
 
-        int getNumCornerPieces(char player);
+        float getNumCornerPieces(char player);
 
-        int getNumSidePieces(char player);
+        float getNumSidePieces(char player);
 
-        int getPlayerOneBlocking();
+        float getPlayerOneBlocking();
 
-        int getPlayerTwoBlocking();
+        float getPlayerTwoBlocking();
 
-        int getPlayerOnePotential();
+        float getPlayerOnePotential();
 
-        int getPlayerTwoPotential();
+        float getPlayerTwoPotential();
 
         MiniBoard copyMe(MiniBoard mini);
 };

@@ -24,9 +24,9 @@ class MetaBoard {
 
         static float constants[6];
 
-        int myUtility;
+        float myUtility;
 
-        int killerHeuristics;
+        int killerHeuristics = 0;
 
         void printMe();
 
@@ -47,17 +47,7 @@ class MetaBoard {
 
         vector<MetaBoard> generateChildren();
 
-        static void setConstants(int constants[]);
-
-        float getScore(char player);
-        float getNumCenterPieces(char player);
-        float getNumCornerPieces(char player);
-        float getNumSidePieces(char player);
-        
-        float getPlayerOneBlocking();
-        float getPlayerOnePotential();
-        float getPlayerTwoBlocking();
-        float getPlayerTwoPotential();
+        static void setConstants(float constants[]);
 
         float computeUtilityAndKillerHeuristics(int boardPlacement);
 
