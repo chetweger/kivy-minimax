@@ -145,24 +145,40 @@ float MetaBoard::computeUtilityAndKillerHeuristics(int boardPlacement) {
 
     int player_one_scored = 0;
     int player_two_scored = 0;
+
     this->killerHeuristics = 0;
+
+    int scorePlayer1 = 0;
+    int centerPlayer1 = 0;
+    int cornerPlayer1 = 0;
+    int sidePlayer1 = 0;
+    int blockingPlayer1 = 0;
+    int potentialPlayer1 = 0;
+
+    int scorePlayer2 = 0;
+    int centerPlayer2 = 0;
+    int cornerPlayer2 = 0;
+    int sidePlayer2 = 0;
+    int blockingPlayer2 = 0;
+    int potentialPlayer2 = 0;
+
     for (int i = 0; i < 9; i++) {
         player_one_scored = this->boards[i].getScore(MiniBoard::PLAYER_ONE);
         player_two_scored = this->boards[i].getScore(MiniBoard::PLAYER_TWO);
-        score_player_1 += (float) MetaBoard::constants[0] * player_one_scored;
-        score_player_2 += MetaBoard::constants[0] * player_two_scored;
+        scorePlayer1 += player_one_scored;
+        scorePlayer2 +=  player_two_scored;
         if (!(player_one_scored || player_two_scored)) {
-            score_player_1 += (float) MetaBoard::constants[1] * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_ONE);
-            score_player_1 += (float) MetaBoard::constants[2] * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_ONE);
-            score_player_1 += (float) MetaBoard::constants[3] * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_ONE);
-            score_player_1 += (float) MetaBoard::constants[4] * this->boards[i].getPlayerOneBlocking();
-            score_player_1 += (float) MetaBoard::constants[5] * this->boards[i].getPlayerOnePotential();
+            centerPlayer1 += this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_ONE);
+            cornerPlayer1 += this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_ONE);
+            sidePlayer1 += this->boards[i].getNumSidePieces(MiniBoard::PLAYER_ONE);
+            blockingPlayer1 += this->boards[i].getPlayerOneBlocking();
+            potentialPlayer1 += this->boards[i].getPlayerOnePotential();
 
-            score_player_2 += (float) MetaBoard::constants[1] * this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_TWO);
-            score_player_2 += (float) MetaBoard::constants[2] * this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_TWO);
-            score_player_2 += (float) MetaBoard::constants[3] * this->boards[i].getNumSidePieces(MiniBoard::PLAYER_TWO);
-            score_player_2 += (float) MetaBoard::constants[4] * this->boards[i].getPlayerTwoBlocking();
-            score_player_2 += (float) MetaBoard::constants[5] * this->boards[i].getPlayerTwoPotential();
+            centerPlayer2 += this->boards[i].getNumCenterPieces(MiniBoard::PLAYER_TWO);
+            cornerPlayer2 += this->boards[i].getNumCornerPieces(MiniBoard::PLAYER_TWO);
+            sidePlayer2 += this->boards[i].getNumSidePieces(MiniBoard::PLAYER_TWO);
+            blockingPlayer2 += this->boards[i].getPlayerTwoBlocking();
+            potentialPlayer2 += this->boards[i].getPlayerTwoPotential();
 
             if (i == boardPlacement) {
                 // compute "blocking" killer heuristic
@@ -181,8 +197,20 @@ float MetaBoard::computeUtilityAndKillerHeuristics(int boardPlacement) {
         if (i == boardPlacement && (player_one_scored || player_two_scored)) {
             this->killerHeuristics += 3;
         }
-
     }
+    score_player_1 += (float) MetaBoard::constants[0] * scorePlayer1;
+    score_player_1 += (float) MetaBoard::constants[1] * centerPlayer1;
+    score_player_1 += (float) MetaBoard::constants[2] * cornerPlayer1;
+    score_player_1 += (float) MetaBoard::constants[3] * sidePlayer1;
+    score_player_1 += (float) MetaBoard::constants[4] * blockingPlayer1;
+    score_player_1 += (float) MetaBoard::constants[5] * potentialPlayer1;
+
+    score_player_2 += (float) MetaBoard::constants[0] * scorePlayer2;
+    score_player_2 += (float) MetaBoard::constants[1] * centerPlayer2;
+    score_player_2 += (float) MetaBoard::constants[2] * cornerPlayer2;
+    score_player_2 += (float) MetaBoard::constants[3] * sidePlayer2;
+    score_player_2 += (float) MetaBoard::constants[4] * blockingPlayer2;
+    score_player_2 += (float) MetaBoard::constants[5] * potentialPlayer2;
 
     if (MiniBoard::PLAYER_ONE == this->player_max) {
         this->myUtility = score_player_1 - score_player_2;

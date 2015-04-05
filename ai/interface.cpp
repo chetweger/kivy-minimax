@@ -8,11 +8,11 @@ static PyObject* minimaxSearch(PyObject* self, PyObject *metaBoardStateArgs)
 {
     MetaBoard metaBoard;
     int board[9][9];
-    int constants[6];
+    float constants[6];
     int getNextMove;
 
     if (!PyArg_ParseTuple(metaBoardStateArgs,
-        "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiii)(iiiii)",
+        "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(ffffff)(iiiii)",
         &board[0][0], &board[0][1], &board[0][2], &board[0][3], &board[0][4], &board[0][5], &board[0][6], &board[0][7], &board[0][8],
         &board[1][0], &board[1][1], &board[1][2], &board[1][3], &board[1][4], &board[1][5], &board[1][6], &board[1][7], &board[1][8],
         &board[2][0], &board[2][1], &board[2][2], &board[2][3], &board[2][4], &board[2][5], &board[2][6], &board[2][7], &board[2][8],
@@ -37,7 +37,7 @@ static PyObject* minimaxSearch(PyObject* self, PyObject *metaBoardStateArgs)
 
     cout << "next mini board is " << next.next_mini_board << "\n";
 
-    return Py_BuildValue( "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiii)(iiiii)",
+    return Py_BuildValue( "(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(iiiiiiiii)(ffffff)(iiiii)",
             next.boards[0].board[0], next.boards[0].board[1], next.boards[0].board[2], next.boards[0].board[3], next.boards[0].board[4], next.boards[0].board[5], next.boards[0].board[6], next.boards[0].board[7], next.boards[0].board[8], 
             next.boards[1].board[0], next.boards[1].board[1], next.boards[1].board[2], next.boards[1].board[3], next.boards[1].board[4], next.boards[1].board[5], next.boards[1].board[6], next.boards[1].board[7], next.boards[1].board[8], 
             next.boards[2].board[0], next.boards[2].board[1], next.boards[2].board[2], next.boards[2].board[3], next.boards[2].board[4], next.boards[2].board[5], next.boards[2].board[6], next.boards[2].board[7], next.boards[2].board[8], 
